@@ -16,6 +16,12 @@ docker compose up -d --build
 # コンテナのターミナルへ接続する
 
 ```
-cd src
 docker compose exec python3 bash
+```
+
+# コードの実行
+
+```
+cd src
+python main.py
 ```
