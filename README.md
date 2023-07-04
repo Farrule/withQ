@@ -1,4 +1,21 @@
 # .envファイルの追加とTOKENの設定
 
 .envファイルをsrcファイル直下に配置する
-.envファイルのTOKENキーのパラメータにdiscord bot のトークンを設定する
+.envファイルに以下の記述を追加し、保存する
+
+```
+TOKEN={discord bot token}
+```
+
+# docker build
+
+```
+docker compose up -d --build
+```
+
+# コンテナのターミナルへ接続する
+
+```
+cd src
+docker compose exec python3 bash
+```
