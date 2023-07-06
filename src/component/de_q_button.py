@@ -14,9 +14,11 @@ class DeQButton(Button):
         view: View = self.view
         print(view.is_finished())
         print(self.in_queue_member_dict)
+        # ボタン押下者が募集主の場合、参加取り消し処理を行わずに取り消しができない旨を伝えるメッセージを送信する
         if interaction.user.global_name == next(iter(self.in_queue_member_dict)):
             await interaction.response.send_message("募集主はDE Qできません。", ephemeral=True)
             return
+        # ボタン押下者が参加者ディクショナリに存在する場合、参加取り消し処理を行い募集メッセージを編集し参加を取り消した旨を伝えるメッセージを送信する
         if interaction.user.global_name in self.in_queue_member_dict:
             self.in_queue_member_dict.pop(interaction.user.global_name)
             users = ""
@@ -28,6 +30,7 @@ class DeQButton(Button):
             )
             await interaction.followup.send("この募集への参加を取り消しました。", ephemeral=True)
             print(self.in_queue_member_dict)
+        # ボタン押下者が参加者ディレクトリに存在しない場合、その募集に参加していない旨を伝えるメッセージを送信する
         elif interaction.user.global_name not in self.in_queue_member_dict.keys():
             await interaction.response.send_message("あなたはこの募集に参加していません。", ephemeral=True)
             print(self.in_queue_member_dict)

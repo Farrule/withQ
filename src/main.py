@@ -3,8 +3,6 @@ import asyncio
 
 import discord
 from discord.ext import commands
-# from discord.ui import Button, View
-# from discord.interactions import Interaction
 from dotenv import load_dotenv
 
 import component.row_view as row_view
@@ -15,7 +13,6 @@ TOKEN = os.getenv("TOKEN")
 
 # instance
 intents = discord.Intents.default()
-# intents.members = True
 intents.message_content = True
 
 
@@ -37,6 +34,7 @@ async def w(ctx, title: str, recruitment_num: int, *delete_time: int):
     in_queue_member_dict = {ctx.message.author.global_name: ctx.message.author.mention}
 
     try:
+        # 時間制限パラメータが設定されている場合に実行する
         if len(delete_time) != 0:
             await ctx.send(
                 f'`{title}`  @`{recruitment_num}`\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -45,6 +43,8 @@ async def w(ctx, title: str, recruitment_num: int, *delete_time: int):
             )
             await asyncio.sleep(delete_time[0]*60)
             await ctx.message.delete()
+
+        # 時間制限パラメータが設定されていない場合に実行する
         if len(delete_time) == 0:
             await ctx.send(
                 f'`{title}`  @`{recruitment_num}`\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',

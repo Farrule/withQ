@@ -14,7 +14,7 @@ class InQButton(Button):
         view: View = self.view
         print(view.is_finished())
         print(self.in_queue_member_dict)
-        # ボタン押下者が対象の募集に参加していない場合、メンションリストとユーザーリストにボタン押下者の情報を追加する
+        # ボタン押下者が対象の募集に参加していない場合、参加者ディクショナリにボタン押下者の情報を追加する
         if interaction.user.global_name not in self.in_queue_member_dict:
             self.in_queue_member_dict[interaction.user.global_name] = interaction.user.mention
             print(self.in_queue_member_dict)
@@ -28,7 +28,7 @@ class InQButton(Button):
                     view=None,
                 )
                 return
-            # 募集人数に達していない場合、募集用メッセージを編集し残りの募集人数を変更する
+            # 募集人数に達していない場合、募集用メッセージを編集する
             if len(self.in_queue_member_dict) <= self.recruitment_num:
                 users = ""
                 for user in self.in_queue_member_dict:
