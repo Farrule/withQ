@@ -22,7 +22,7 @@ class InQButton(Button):
             if len(self.in_queue_member_dict) - 1 == self.recruitment_num:
                 mentions = ""
                 for mention in self.in_queue_member_dict.values():
-                    mentions += mention
+                    mentions += mention + ' '
                 await interaction.response.edit_message(
                     content=f'{mentions}\n{self.title}\n上記の募集が完了しました。',
                     view=None,
