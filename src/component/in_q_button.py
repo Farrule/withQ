@@ -3,11 +3,12 @@ from discord.ui import Button, View
 from discord.interactions import Interaction
 
 class InQButton(Button):
-    def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict):
+    def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict, recruiter):
         super().__init__(label="IN Q", style=discord.ButtonStyle.primary)
         self.title = title
         self.recruitment_num = recruitment_num
         self.in_queue_member_dict = in_queue_member_dict
+        self.recruiter = recruiter
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -38,6 +39,9 @@ class InQButton(Button):
                     content=f'{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
                 )
                 await interaction.followup.send("この募集に参加しました。", ephemeral=True)
+                await self.recruiter.send(
+                    content=f'あなたが募集している {self.title} に {interaction.user.global_name} が参加しました。',
+                )
                 print(self.in_queue_member_dict)
         # ボタン押下者が対象の募集にすでに参加している場合、その旨を伝えるメッセージを送信する
         elif interaction.user.global_name in self.in_queue_member_dict:

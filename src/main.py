@@ -41,13 +41,15 @@ async def w(
 
     # key: 参加者ユーザーネーム value:メンションID
     in_queue_member_dict = {ctx.message.author.global_name: ctx.message.author.mention}
+    recruiter = ctx.author
+
 
     try:
         # 時間制限パラメータが設定されている場合に実行する
         if len(delete_time) > 0:
             await ctx.send(
-                f'`{title}`  @`{recruitment_num}`\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                view=row_view.RowView(title, recruitment_num, in_queue_member_dict),
+                f'{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+                view=row_view.RowView(title, recruitment_num, in_queue_member_dict, recruiter),
                 delete_after=delete_time[0]*60
             )
             await asyncio.sleep(delete_time[0]*60)
@@ -56,8 +58,8 @@ async def w(
         # 時間制限パラメータが設定されていない場合に実行する
         if len(delete_time) == 0:
             await ctx.send(
-                f'`{title}`  @`{recruitment_num}`\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                view=row_view.RowView(title, recruitment_num, in_queue_member_dict)
+                f'{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+                view=row_view.RowView(title, recruitment_num, in_queue_member_dict, recruiter)
             )
 
         # TODO end_time: 締め切り時間パラメータが設定されている場合に実行する
