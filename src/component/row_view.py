@@ -14,13 +14,14 @@ class RowView(View):
         recruitment_num: int,
         in_queue_member_dict: dict,
         recruiter: discord.member.Member,
-        mention_target: str
+        mention_target: str,
+        is_feedback_on_recruitment: bool
     ):
         super().__init__(timeout=None)
         self.add_item(in_q_button.InQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment))
         self.add_item(de_q_button.DeQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment))
         self.add_item(closing_button.ClosingQButton(
             title, recruitment_num, in_queue_member_dict))
         self.add_item(cancel_button.CancelButton(in_queue_member_dict))

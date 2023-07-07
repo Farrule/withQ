@@ -49,23 +49,26 @@ async def w(
         ctx.message.author.global_name: ctx.message.author.mention}
     recruiter = ctx.author
     mention_target = ""
+    is_feedback_on_recruitment = True
 
     try:
         print(args)
         for setting_parm in args:
             # setting_param: @here形式の場合に処理を行う
             print(setting_parm)
-            print(re.match(regex.MENTION_IS_HERE, str(setting_parm)))
             if re.match(regex.MENTION_IS_HERE, str(setting_parm)) != None and mention_target == "":
                 mention_target = "@here"
             # setting_param: @everyone形式の場合に処理を行う
             if re.match(regex.MENTION_IS_EVERYONE, str(setting_parm)) != None and mention_target == "":
                 mention_target = "@everyone"
+            # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
+            if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_parm)) != None:
+                is_feedback_on_recruitment = False
             # 募集メッセージを作成、送信する
             bot_message = await ctx.send(
                 f'{mention_target}\n{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
                 view=row_view.RowView(
-                    title, recruitment_num, in_queue_member_dict, recruiter, mention_target
+                    title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment
                 )
             )
             # setting_parm: 開始時間の形式の場合に自動的に締め切り処理を行う
