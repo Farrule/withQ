@@ -2,13 +2,22 @@ import discord
 from discord.ui import Button, View
 from discord.interactions import Interaction
 
+
 class DeQButton(Button):
-    def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict, recruiter):
+    def __init__(
+        self,
+        title: str,
+        recruitment_num: int,
+        in_queue_member_dict: dict,
+        recruiter: discord.member.Member,
+        mention_target: str
+    ):
         super().__init__(label="DE Q", style=discord.ButtonStyle.red)
         self.title = title
         self.recruitment_num = recruitment_num
         self.in_queue_member_dict = in_queue_member_dict
         self.recruiter = recruiter
+        self.mention_target = mention_target
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -27,12 +36,12 @@ class DeQButton(Button):
                 if user != next(iter(self.in_queue_member_dict)):
                     users = user + ',' + users
             await interaction.response.edit_message(
-                content=f'{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
+                content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
             )
             await interaction.followup.send("この募集への参加を取り消しました。", ephemeral=True)
             await self.recruiter.send(
-                    content=f'あなたが募集している {self.title} から {interaction.user.global_name} が参加を取り消しました。',
-                )
+                content=f'あなたが募集している {self.title} から {interaction.user.global_name} が参加を取り消しました。',
+            )
             print(self.in_queue_member_dict)
         # ボタン押下者が参加者ディレクトリに存在しない場合、その募集に参加していない旨を伝えるメッセージを送信する
         elif interaction.user.global_name not in self.in_queue_member_dict.keys():

@@ -39,7 +39,6 @@ async def w(
     title: str,
     recruitment_num: int,
     *args,
-    # *delete_time: int,
 ):
     """withQ command"""
 
@@ -49,19 +48,31 @@ async def w(
     in_queue_member_dict = {
         ctx.message.author.global_name: ctx.message.author.mention}
     recruiter = ctx.author
+    mention_target = ""
 
     try:
         print(args)
         for setting_parm in args:
+            # setting_param: @here形式の場合に処理を行う
+            print(setting_parm)
+            print(re.match(regex.MENTION_IS_HERE, str(setting_parm)))
+            if re.match(regex.MENTION_IS_HERE, str(setting_parm)) != None and mention_target == "":
+                mention_target = "@here"
+            # setting_param: @everyone形式の場合に処理を行う
+            if re.match(regex.MENTION_IS_EVERYONE, str(setting_parm)) != None and mention_target == "":
+                mention_target = "@everyone"
+            # 募集メッセージを作成、送信する
+            bot_message = await ctx.send(
+                f'{mention_target}\n{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+                view=row_view.RowView(
+                    title, recruitment_num, in_queue_member_dict, recruiter, mention_target
+                )
+            )
+            # setting_parm: 開始時間の形式の場合に自動的に締め切り処理を行う
             if re.match(regex.START_TIME, str(setting_parm)) != None:
                 start_time = str(setting_parm).replace(
                     ':', '').replace('~', '')
                 if int(start_time) >= int(now_time):
-                    bot_message = await ctx.send(
-                        f'{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                        view=row_view.RowView(
-                            title, recruitment_num, in_queue_member_dict, recruiter)
-                    )
                     await asyncio.sleep((int(start_time) - int(now_time))*60)
                     mentions = ""
                     for mention in in_queue_member_dict.values():
@@ -70,18 +81,9 @@ async def w(
                         content=f'{mentions}\n{title}\n上記の募集を締め切りました。',
                         view=None,
                     )
-                else:
-                    await ctx.reply("開始時間の入力値を確認してください。", ephemeral=True)
-
-            else:
-                await ctx.send(
-                    f'{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                    view=row_view.RowView(
-                        title, recruitment_num, in_queue_member_dict, recruiter)
-                )
 
     except:
-        await ctx.send("except")
+        await ctx.send("error occurred")
 
 
 bot.run(TOKEN)

@@ -2,13 +2,22 @@ import discord
 from discord.ui import Button, View
 from discord.interactions import Interaction
 
+
 class InQButton(Button):
-    def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict, recruiter):
+    def __init__(
+        self,
+        title: str,
+        recruitment_num: int,
+        in_queue_member_dict: dict,
+        recruiter: discord.member.Member,
+        mention_target: str
+    ):
         super().__init__(label="IN Q", style=discord.ButtonStyle.primary)
         self.title = title
         self.recruitment_num = recruitment_num
         self.in_queue_member_dict = in_queue_member_dict
         self.recruiter = recruiter
+        self.mention_target = mention_target
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -36,7 +45,7 @@ class InQButton(Button):
                     if user != next(iter(self.in_queue_member_dict)):
                         users = user + ',' + users
                 await interaction.response.edit_message(
-                    content=f'{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
+                    content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
                 )
                 await interaction.followup.send("この募集に参加しました。", ephemeral=True)
                 await self.recruiter.send(
