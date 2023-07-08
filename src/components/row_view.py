@@ -24,5 +24,5 @@ class RowView(View):
         self.add_item(de_q_button.DeQButton(
             title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, promised_time))
         self.add_item(closing_button.ClosingQButton(
-            title, recruitment_num, in_queue_member_dict))
+            title, recruitment_num, in_queue_member_dict, promised_time))
         self.add_item(cancel_button.CancelButton(in_queue_member_dict))

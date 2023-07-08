@@ -47,7 +47,6 @@ async def w(
     """withQ command"""
 
     now_datetime = datetime.datetime.now()
-    now_time = str(now_datetime.hour) + str(now_datetime.minute)
     # key: 参加者ユーザーネーム value:メンションID
     in_queue_member_dict = {
         ctx.message.author.global_name: ctx.message.author.mention}
@@ -55,46 +54,68 @@ async def w(
     mention_target = ""
     is_feedback_on_recruitment = True
     promised_time = ""
-    start_time = 0
+    total_seconds = 0
 
     try:
         print(args)
-        for setting_parm in args:
+        for setting_param in args:
             # setting_param: @here形式の場合に処理を行う
-            if re.match(regex.MENTION_IS_HERE, str(setting_parm)) != None and mention_target == "":
+            if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
                 mention_target = "@here"
             # setting_param: @everyone形式の場合に処理を行う
-            if re.match(regex.MENTION_IS_EVERYONE, str(setting_parm)) != None and mention_target == "":
+            if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
                 mention_target = "@everyone"
             # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
-            if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_parm)) != None:
+            if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
                 is_feedback_on_recruitment = False
-            # setting_parm: 開始時間の形式の場合に自動的に締め切り処理を行う
-            if re.match(regex.START_TIME, str(setting_parm)) != None:
-                # tmp_start_time = str(setting_parm).replace('~', '')
-                promised_time = setting_parm
-                tmp_start_time = setting_parm.replace(':', '')
-                if int(tmp_start_time) >= int(now_time):
-                    start_time = int(tmp_start_time) - int(now_time)
+            # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
+            if promised_time != None:
+                if re.match(regex.START_TIME, str(setting_param)) != None:
+                    time_in_seconds = datetime.datetime.fromtimestamp(
+                        setting_param.replace(':', ''))
+                    if time_in_seconds >= now_datetime:
+                        promised_time = "開始時刻: " + setting_param
+                        time_delta = time_in_seconds - now_datetime
+                        total_seconds = time_delta.total_seconds()
+                if re.match(regex.START_DATETIME, str(setting_param)) != None:
+                    time_in_datetime = datetime.datetime.fromtimestamp(
+                        setting_param.replace('/'), ''.replace(':', ''))
+                    if time_in_datetime >= now_datetime:
+                        promised_time = "開始時刻: " + setting_param
+                        time_delta = time_in_datetime - now_datetime
+                        total_seconds = time_delta.total_seconds()
+                if re.match(regex.START_YEARDATETIME, str(setting_param)) != None:
+                    time_in_datetime = datetime.datetime.fromtimestamp(
+                        setting_param.replace('/'), ''.replace(':', ''))
+                    if time_in_datetime >= now_datetime:
+                        promised_time = "開始時刻: " + setting_param
+                        time_delta = time_in_datetime - now_datetime
+                        total_seconds = time_delta.total_seconds()
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
-            f'{mention_target}\n{title}  @{recruitment_num} 開始時刻:{promised_time}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+            f'{mention_target}\n\
+            {title}  @{recruitment_num} {promised_time if promised_time != None else ""}\n\
+            募集者: {next(iter(in_queue_member_dict))}\n\
+            参加者:',
             view=row_view.RowView(
                 title,
-                recruitment_num, in_queue_member_dict,
+                recruitment_num,
+                in_queue_member_dict,
                 recruiter,
                 mention_target,
                 is_feedback_on_recruitment,
                 promised_time
             )
         )
-        if start_time >= 0:
-            await asyncio.sleep(start_time*60)
+        if total_seconds >= 0:
+            await asyncio.sleep(total_seconds)
             mentions = ""
             for mention in in_queue_member_dict.values():
                 mentions += mention + ' '
             await bot_message.edit(
-                content=f'{mentions}\n{title}\n開始時間になりましたので上記の募集を締め切りました。',
+                content=f'{mentions}\n\
+                        {title}\n\
+                        開始時間になりましたので上記の募集を締め切りました。',
                 view=None,
             )
             return

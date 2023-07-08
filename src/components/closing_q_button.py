@@ -4,11 +4,12 @@ from discord.interactions import Interaction
 
 
 class ClosingQButton(Button):
-    def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict):
+    def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict, promised_time: str):
         super().__init__(label="〆", style=discord.ButtonStyle.green)
         self.title = title
         self.recruitment_num = recruitment_num
         self.in_queue_member_dict = in_queue_member_dict
+        self.promised_time = promised_time
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -18,7 +19,9 @@ class ClosingQButton(Button):
             for mention in self.in_queue_member_dict.values():
                 mentions += mention + ' '
             await interaction.response.edit_message(
-                content=f'{mentions}\n{self.title}\n上記の募集を締め切りました。',
+                content=f'{mentions}\n\
+                        {self.title} {self.promised_time if self.promised_time != None else ""}\n\
+                        上記の募集を締め切りました。',
                 view=None,
             )
             return
