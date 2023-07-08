@@ -1,5 +1,5 @@
 START_TIME = r"[0-2][0-3]:[0-5][0-9]"
-START_DATETIME = r"[0-1][0-2]/[0-3][0-9]/[0-2][0-3]:[0-5][0-9]"
+START_DATETIME = r"[0-1][0-9]/[0-3][0-9]/[0-2][0-3]:[0-5][0-9]"
 START_YEARDATETIME = r"[2][0][2][3-4]/[0-1][0-2]/[0-3][0-9]/[0-2][0-3]:[0-5][0-9]"
 MENTION_IS_HERE = r"h"
 MENTION_IS_EVERYONE = r"e"

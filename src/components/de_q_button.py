@@ -1,6 +1,6 @@
 import discord
-from discord.ui import Button, View
 from discord.interactions import Interaction
+from discord.ui import Button, View
 
 
 class DeQButton(Button):
@@ -12,7 +12,7 @@ class DeQButton(Button):
         recruiter: discord.member.Member,
         mention_target: str,
         is_feedback_on_recruitment: bool,
-        promised_time: str
+        deadline_time: str
     ):
         super().__init__(label="DE Q", style=discord.ButtonStyle.red)
         self.title = title
@@ -21,7 +21,7 @@ class DeQButton(Button):
         self.recruiter = recruiter
         self.mention_target = mention_target
         self.is_feedback_on_recruitment = is_feedback_on_recruitment
-        self.promised_time = promised_time
+        self.deadline_time = deadline_time
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -37,10 +37,7 @@ class DeQButton(Button):
                 if user != next(iter(self.in_queue_member_dict)):
                     users = user + ',' + users
             await interaction.response.edit_message(
-                content=f'{self.mention_target}\n\
-                        {self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} {self.promised_time if self.promised_time != None else ""}\n\
-                        募集者: {next(iter(self.in_queue_member_dict))}\n\
-                        参加者: {users}'
+                content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} {self.deadline_time if self.deadline_time != None else ""}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
             )
             await interaction.followup.send("この募集への参加を取り消しました。", ephemeral=True)
             if self.is_feedback_on_recruitment:
