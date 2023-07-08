@@ -1,18 +1,22 @@
-import os
 import asyncio
-import re
 import datetime
+import os
+import re
+from os.path import dirname, join
 
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import component.row_view as row_view
+import components.row_view as row_view
 import constants.regex as regex
 
 # get bot TOKEN from ./env file
 load_dotenv(verbose=True)
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 TOKEN = os.getenv("TOKEN")
+
 
 HERE_MENTION = "@here"
 EVE_MENTION = "@everyone"
