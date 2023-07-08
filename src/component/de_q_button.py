@@ -37,7 +37,10 @@ class DeQButton(Button):
                 if user != next(iter(self.in_queue_member_dict)):
                     users = user + ',' + users
             await interaction.response.edit_message(
-                content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} 開始時刻:{self.promised_time}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
+                content=f'{self.mention_target}\n\
+                        {self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} {self.promised_time if self.promised_time != None else ""}\n\
+                        募集者: {next(iter(self.in_queue_member_dict))}\n\
+                        参加者: {users}'
             )
             await interaction.followup.send("この募集への参加を取り消しました。", ephemeral=True)
             if self.is_feedback_on_recruitment:
