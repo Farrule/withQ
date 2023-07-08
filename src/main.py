@@ -1,18 +1,23 @@
-import os
 import asyncio
-import re
 import datetime
+import os
+import re
+from os.path import dirname, join
 
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import component.row_view as row_view
-import constants.regex as regex
+import components.constants.regex as regex
+import components.deadline_time as dt
+import components.row_view as row_view
 
 # get bot TOKEN from ./env file
 load_dotenv(verbose=True)
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 TOKEN = os.getenv("TOKEN")
+
 
 HERE_MENTION = "@here"
 EVE_MENTION = "@everyone"
@@ -39,49 +44,63 @@ async def w(
     title: str,
     recruitment_num: int,
     *args,
-    # *delete_time: int,
 ):
     """withQ command"""
 
     now_datetime = datetime.datetime.now()
-    now_time = str(now_datetime.hour) + str(now_datetime.minute)
     # key: 参加者ユーザーネーム value:メンションID
     in_queue_member_dict = {
         ctx.message.author.global_name: ctx.message.author.mention}
     recruiter = ctx.author
+    mention_target = ""
+    is_feedback_on_recruitment = True
+    deadline_time = ""
+    total_seconds = 0
+    is_deadline = False
 
     try:
         print(args)
-        for setting_parm in args:
-            if re.match(regex.START_TIME, str(setting_parm)) != None:
-                start_time = str(setting_parm).replace(
-                    ':', '').replace('~', '')
-                if int(start_time) >= int(now_time):
-                    bot_message = await ctx.send(
-                        f'{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                        view=row_view.RowView(
-                            title, recruitment_num, in_queue_member_dict, recruiter)
-                    )
-                    await asyncio.sleep((int(start_time) - int(now_time))*60)
-                    mentions = ""
-                    for mention in in_queue_member_dict.values():
-                        mentions += mention + ' '
-                    await bot_message.edit(
-                        content=f'{mentions}\n{title}\n上記の募集を締め切りました。',
-                        view=None,
-                    )
-                else:
-                    await ctx.reply("開始時間の入力値を確認してください。", ephemeral=True)
-
-            else:
-                await ctx.send(
-                    f'{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                    view=row_view.RowView(
-                        title, recruitment_num, in_queue_member_dict, recruiter)
-                )
+        for setting_param in args:
+            # setting_param: @here形式の場合に処理を行う
+            if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
+                mention_target = "@here"
+            # setting_param: @everyone形式の場合に処理を行う
+            if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
+                mention_target = "@everyone"
+            # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
+            if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
+                is_feedback_on_recruitment = False
+            # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
+            total_seconds, deadline_time, is_deadline = dt.deadline_time(
+                deadline_time, setting_param, now_datetime, is_deadline)
+        # 募集メッセージを作成、送信する
+        bot_message = await ctx.send(
+            f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+            view=row_view.RowView(
+                title,
+                recruitment_num,
+                in_queue_member_dict,
+                recruiter,
+                mention_target,
+                is_feedback_on_recruitment,
+                deadline_time,
+                is_deadline,
+            )
+        )
+        await asyncio.sleep(total_seconds)
+        if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
+            mentions = ""
+            for mention in in_queue_member_dict.values():
+                mentions += mention + ' '
+            await bot_message.edit(
+                content=f'{mentions}\n{title}  {deadline_time}\n開始時間になりましたので上記の募集を締め切りました。',
+                view=None,
+            )
+            return
 
     except:
-        await ctx.send("except")
+        await ctx.send("error occurred")
+        return
 
 
 bot.run(TOKEN)
