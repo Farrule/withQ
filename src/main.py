@@ -8,8 +8,9 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+import components.constants.regex as regex
+import components.deadline_time as dt
 import components.row_view as row_view
-import constants.regex as regex
 
 # get bot TOKEN from ./env file
 load_dotenv(verbose=True)
@@ -53,8 +54,9 @@ async def w(
     recruiter = ctx.author
     mention_target = ""
     is_feedback_on_recruitment = True
-    promised_time = ""
+    deadline_time = ""
     total_seconds = 0
+    is_deadline = False
 
     try:
         print(args)
@@ -69,34 +71,11 @@ async def w(
             if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
                 is_feedback_on_recruitment = False
             # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
-            if promised_time != None:
-                if re.match(regex.START_TIME, str(setting_param)) != None:
-                    time_in_seconds = datetime.datetime.fromtimestamp(
-                        setting_param.replace(':', ''))
-                    if time_in_seconds >= now_datetime:
-                        promised_time = "開始時刻: " + setting_param
-                        time_delta = time_in_seconds - now_datetime
-                        total_seconds = time_delta.total_seconds()
-                if re.match(regex.START_DATETIME, str(setting_param)) != None:
-                    time_in_datetime = datetime.datetime.fromtimestamp(
-                        setting_param.replace('/'), ''.replace(':', ''))
-                    if time_in_datetime >= now_datetime:
-                        promised_time = "開始時刻: " + setting_param
-                        time_delta = time_in_datetime - now_datetime
-                        total_seconds = time_delta.total_seconds()
-                if re.match(regex.START_YEARDATETIME, str(setting_param)) != None:
-                    time_in_datetime = datetime.datetime.fromtimestamp(
-                        setting_param.replace('/'), ''.replace(':', ''))
-                    if time_in_datetime >= now_datetime:
-                        promised_time = "開始時刻: " + setting_param
-                        time_delta = time_in_datetime - now_datetime
-                        total_seconds = time_delta.total_seconds()
+            total_seconds, deadline_time, is_deadline = dt.deadline_time(
+                deadline_time, setting_param, now_datetime, is_deadline)
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
-            f'{mention_target}\n\
-            {title}  @{recruitment_num} {promised_time if promised_time != None else ""}\n\
-            募集者: {next(iter(in_queue_member_dict))}\n\
-            参加者:',
+            f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
             view=row_view.RowView(
                 title,
                 recruitment_num,
@@ -104,18 +83,17 @@ async def w(
                 recruiter,
                 mention_target,
                 is_feedback_on_recruitment,
-                promised_time
+                deadline_time,
+                is_deadline,
             )
         )
-        if total_seconds >= 0:
-            await asyncio.sleep(total_seconds)
+        await asyncio.sleep(total_seconds)
+        if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
             mentions = ""
             for mention in in_queue_member_dict.values():
                 mentions += mention + ' '
             await bot_message.edit(
-                content=f'{mentions}\n\
-                        {title}\n\
-                        開始時間になりましたので上記の募集を締め切りました。',
+                content=f'{mentions}\n{title}  {deadline_time}\n開始時間になりましたので上記の募集を締め切りました。',
                 view=None,
             )
             return
