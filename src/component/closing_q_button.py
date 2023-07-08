@@ -2,6 +2,7 @@ import discord
 from discord.ui import Button, View
 from discord.interactions import Interaction
 
+
 class ClosingQButton(Button):
     def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict):
         super().__init__(label="〆", style=discord.ButtonStyle.green)
@@ -11,9 +12,6 @@ class ClosingQButton(Button):
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
-        view: View = self.view
-        print(view.is_finished())
-        print(self.in_queue_member_dict)
         # ボタン押下者が募集主の場合、募集メッセージを編集して募集を締め切った旨を伝えるメッセージにする
         if interaction.user.global_name == next(iter(self.in_queue_member_dict)):
             mentions = ""

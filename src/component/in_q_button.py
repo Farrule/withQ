@@ -53,7 +53,9 @@ class InQButton(Button):
                         content=f'あなたが募集している {self.title} に {interaction.user.global_name} が参加しました。',
                     )
                 print(self.in_queue_member_dict)
+                return
         # ボタン押下者が対象の募集にすでに参加している場合、その旨を伝えるメッセージを送信する
         elif interaction.user.global_name in self.in_queue_member_dict:
             await interaction.response.send_message("すでにこの募集に参加しています。", ephemeral=True)
             print(self.in_queue_member_dict)
+            return

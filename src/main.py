@@ -93,9 +93,11 @@ async def w(
                 content=f'{mentions}\n{title}\n開始時間になりましたので上記の募集を締め切りました。',
                 view=None,
             )
+            return
 
     except:
         await ctx.send("error occurred")
+        return
 
 
 bot.run(TOKEN)
