@@ -10,12 +10,14 @@ TOKEN={discord bot token}
 # docker build
 
 ```
+cd docker
 docker compose up -d --build
 ```
 
 # コンテナのターミナルへ接続する
 
 ```
+cd docker
 docker compose exec python3 bash
 ```
 
