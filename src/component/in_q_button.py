@@ -11,7 +11,8 @@ class InQButton(Button):
         in_queue_member_dict: dict,
         recruiter: discord.member.Member,
         mention_target: str,
-        is_feedback_on_recruitment: bool
+        is_feedback_on_recruitment: bool,
+        promised_time: str
     ):
         super().__init__(label="IN Q", style=discord.ButtonStyle.primary)
         self.title = title
@@ -20,6 +21,7 @@ class InQButton(Button):
         self.recruiter = recruiter
         self.mention_target = mention_target
         self.is_feedback_on_recruitment = is_feedback_on_recruitment
+        self.promised_time = promised_time
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -43,7 +45,7 @@ class InQButton(Button):
                     if user != next(iter(self.in_queue_member_dict)):
                         users = user + ',' + users
                 await interaction.response.edit_message(
-                    content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
+                    content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} 開始時刻:{self.promised_time}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
                 )
                 await interaction.followup.send("この募集に参加しました。", ephemeral=True)
                 if self.is_feedback_on_recruitment:
