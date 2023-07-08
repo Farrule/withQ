@@ -1,6 +1,6 @@
 import discord
 from discord.interactions import Interaction
-from discord.ui import Button, View
+from discord.ui import Button
 
 
 class DeQButton(Button):

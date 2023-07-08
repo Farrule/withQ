@@ -16,13 +16,15 @@ class RowView(View):
         recruiter: discord.member.Member,
         mention_target: str,
         is_feedback_on_recruitment: bool,
-        promised_time: str
+        deadline_time: str,
+        is_deadline: bool,
     ):
         super().__init__(timeout=None)
         self.add_item(in_q_button.InQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, promised_time))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time))
         self.add_item(de_q_button.DeQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, promised_time))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time))
         self.add_item(closing_button.ClosingQButton(
-            title, recruitment_num, in_queue_member_dict, promised_time))
-        self.add_item(cancel_button.CancelButton(in_queue_member_dict))
+            title, recruitment_num, in_queue_member_dict, deadline_time, is_deadline))
+        self.add_item(cancel_button.CancelButton(
+            in_queue_member_dict, is_deadline))
