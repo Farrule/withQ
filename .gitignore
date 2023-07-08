@@ -1,5 +1,5 @@
 .env
 .vscode
-src/component/__pycache__
+src/components/__pycache__
 src/constants/__pycache__
 TODO.md
