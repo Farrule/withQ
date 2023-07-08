@@ -50,12 +50,13 @@ async def w(
     recruiter = ctx.author
     mention_target = ""
     is_feedback_on_recruitment = True
+    promised_time = ""
+    start_time = 0
 
     try:
         print(args)
         for setting_parm in args:
             # setting_param: @here形式の場合に処理を行う
-            print(setting_parm)
             if re.match(regex.MENTION_IS_HERE, str(setting_parm)) != None and mention_target == "":
                 mention_target = "@here"
             # setting_param: @everyone形式の場合に処理を行う
@@ -64,26 +65,34 @@ async def w(
             # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
             if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_parm)) != None:
                 is_feedback_on_recruitment = False
-            # 募集メッセージを作成、送信する
-            bot_message = await ctx.send(
-                f'{mention_target}\n{title}  @{recruitment_num}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                view=row_view.RowView(
-                    title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment
-                )
-            )
             # setting_parm: 開始時間の形式の場合に自動的に締め切り処理を行う
             if re.match(regex.START_TIME, str(setting_parm)) != None:
-                start_time = str(setting_parm).replace(
-                    ':', '').replace('~', '')
-                if int(start_time) >= int(now_time):
-                    await asyncio.sleep((int(start_time) - int(now_time))*60)
-                    mentions = ""
-                    for mention in in_queue_member_dict.values():
-                        mentions += mention + ' '
-                    await bot_message.edit(
-                        content=f'{mentions}\n{title}\n上記の募集を締め切りました。',
-                        view=None,
-                    )
+                # tmp_start_time = str(setting_parm).replace('~', '')
+                promised_time = setting_parm
+                tmp_start_time = setting_parm.replace(':', '')
+                if int(tmp_start_time) >= int(now_time):
+                    start_time = int(tmp_start_time) - int(now_time)
+        # 募集メッセージを作成、送信する
+        bot_message = await ctx.send(
+            f'{mention_target}\n{title}  @{recruitment_num} 開始時刻:{promised_time}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+            view=row_view.RowView(
+                title,
+                recruitment_num, in_queue_member_dict,
+                recruiter,
+                mention_target,
+                is_feedback_on_recruitment,
+                promised_time
+            )
+        )
+        if start_time >= 0:
+            await asyncio.sleep(start_time*60)
+            mentions = ""
+            for mention in in_queue_member_dict.values():
+                mentions += mention + ' '
+            await bot_message.edit(
+                content=f'{mentions}\n{title}\n開始時間になりましたので上記の募集を締め切りました。',
+                view=None,
+            )
 
     except:
         await ctx.send("error occurred")
