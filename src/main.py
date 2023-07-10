@@ -71,8 +71,9 @@ async def w(
             if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
                 is_feedback_on_recruitment = False
             # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
-            total_seconds, deadline_time, is_deadline = dt.deadline_time(
-                deadline_time, setting_param, now_datetime, is_deadline)
+            if re.match(regex.DATETIME_TYPE, str(setting_param)) != None:
+                total_seconds, deadline_time, is_deadline = dt.deadline_time(
+                    deadline_time, setting_param, now_datetime, is_deadline)
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -87,16 +88,17 @@ async def w(
                 is_deadline,
             )
         )
-        await asyncio.sleep(total_seconds)
-        if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
-            mentions = ""
-            for mention in in_queue_member_dict.values():
-                mentions += mention + ' '
-            await bot_message.edit(
-                content=f'{mentions}\n{title}  {deadline_time}\n開始時間になりましたので上記の募集を締め切りました。',
-                view=None,
-            )
-            return
+        if total_seconds > 0:
+            await asyncio.sleep(total_seconds)
+            if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
+                mentions = ""
+                for mention in in_queue_member_dict.values():
+                    mentions += mention + ' '
+                await bot_message.edit(
+                    content=f'{mentions}\n{title}  {deadline_time}\n開始時間になりましたので上記の募集を締め切りました。',
+                    view=None,
+                )
+                return
 
     except:
         await ctx.send("error occurred")
