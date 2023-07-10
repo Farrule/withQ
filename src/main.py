@@ -9,6 +9,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 import components.constants.regex as regex
+import components.constants.const as c
 import components.deadline_time as dt
 import components.row_view as row_view
 
@@ -18,9 +19,6 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 TOKEN = os.getenv("TOKEN")
 
-
-HERE_MENTION = "@here"
-EVE_MENTION = "@everyone"
 
 # instance
 intents = discord.Intents.default()
@@ -63,10 +61,10 @@ async def w(
         for setting_param in args:
             # setting_param: @here形式の場合に処理を行う
             if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
-                mention_target = "@here"
+                mention_target = c.HERE_MENTION
             # setting_param: @everyone形式の場合に処理を行う
             if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
-                mention_target = "@everyone"
+                mention_target = c.EVE_MENTION
             # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
             if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
                 is_feedback_on_recruitment = False
@@ -95,7 +93,7 @@ async def w(
                 for mention in in_queue_member_dict.values():
                     mentions += mention + ' '
                 await bot_message.edit(
-                    content=f'{mentions}\n{title}  {deadline_time}\n開始時間になりましたので上記の募集を締め切りました。',
+                    content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE}になりましたので上記の募集を締め切りました。',
                     view=None,
                 )
                 return
