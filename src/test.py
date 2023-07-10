@@ -58,35 +58,36 @@ async def t(
     total_seconds = 0
     is_deadline = False
 
-    try:
-        print(args)
-        for setting_param in args:
-            # setting_param: @here形式の場合に処理を行う
-            if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
-                mention_target = "@here"
-            # setting_param: @everyone形式の場合に処理を行う
-            if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
-                mention_target = "@everyone"
-            # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
-            if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
-                is_feedback_on_recruitment = False
-            # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
+    print(args)
+    for setting_param in args:
+        # setting_param: @here形式の場合に処理を行う
+        if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
+            mention_target = "@here"
+        # setting_param: @everyone形式の場合に処理を行う
+        if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
+            mention_target = "@everyone"
+        # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
+        if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
+            is_feedback_on_recruitment = False
+        # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
+        if re.match(regex.DATETIME_TYPE, str(setting_param)) != None:
             total_seconds, deadline_time, is_deadline = dt.deadline_time(
                 deadline_time, setting_param, now_datetime, is_deadline)
-        # 募集メッセージを作成、送信する
-        bot_message = await ctx.send(
-            f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-            view=row_view.RowView(
-                title,
-                recruitment_num,
-                in_queue_member_dict,
-                recruiter,
-                mention_target,
-                is_feedback_on_recruitment,
-                deadline_time,
-                is_deadline,
-            )
+    # 募集メッセージを作成、送信する
+    bot_message = await ctx.send(
+        f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+        view=row_view.RowView(
+            title,
+            recruitment_num,
+            in_queue_member_dict,
+            recruiter,
+            mention_target,
+            is_feedback_on_recruitment,
+            deadline_time,
+            is_deadline,
         )
+    )
+    if total_seconds > 0:
         await asyncio.sleep(total_seconds)
         if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
             mentions = ""
@@ -97,10 +98,5 @@ async def t(
                 view=None,
             )
             return
-
-    except:
-        await ctx.send("error occurred")
-        return
-
 
 bot.run(TOKEN)
