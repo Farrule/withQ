@@ -7,8 +7,9 @@ import components.constants.regex as regex
 
 
 def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime, is_deadline: bool):
+    print("aa")
     if deadline_time == "":
-        if re.match(regex.START_TIME, str(setting_param)) != None:
+        if re.match(regex.TIME, str(setting_param)) != None:
             time_in_seconds = datetime.datetime.strptime(
                 str(now_datetime.year) + str(now_datetime.month) + str(now_datetime.day) + setting_param.replace(':', ''), "%Y%m%d%H%M")
             print(time_in_seconds)
@@ -19,7 +20,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
                 print(total_seconds)
                 is_deadline = True
                 return total_seconds, deadline_time, is_deadline
-        if re.match(regex.START_DATETIME, str(setting_param)) != None:
+        if re.match(regex.DATETIME, str(setting_param)) != None:
             print(setting_param.replace('/', '').replace(':', ''))
             time_in_datetime = datetime.datetime.strptime(
                 str(now_datetime.year) + setting_param.replace('/', '').replace(':', ''), "%Y%m%d%H%M")
@@ -31,7 +32,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
                 print(total_seconds)
                 is_deadline = True
                 return total_seconds, deadline_time, is_deadline
-        if re.match(regex.START_YEARDATETIME, str(setting_param)) != None:
+        if re.match(regex.YEARDATETIME, str(setting_param)) != None:
             time_in_datetime = datetime.datetime.strptime(
                 setting_param.replace('/', '').replace(':', ''), "%Y%m%d%H%M")
             print(time_in_datetime)
