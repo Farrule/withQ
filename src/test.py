@@ -9,6 +9,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 import components.constants.regex as regex
+import components.constants.const as c
 import components.deadline_time as dt
 import components.row_view as row_view
 
@@ -18,9 +19,6 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 TOKEN = os.getenv("DEBUG")
 
-
-HERE_MENTION = "@here"
-EVE_MENTION = "@everyone"
 
 # instance
 intents = discord.Intents.default()
@@ -62,10 +60,10 @@ async def t(
     for setting_param in args:
         # setting_param: @here形式の場合に処理を行う
         if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
-            mention_target = "@here"
+            mention_target = c.HERE_MENTION
         # setting_param: @everyone形式の場合に処理を行う
         if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
-            mention_target = "@everyone"
+            mention_target = c.EVE_MENTION
         # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
         if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
             is_feedback_on_recruitment = False
