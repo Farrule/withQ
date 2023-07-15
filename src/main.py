@@ -5,6 +5,7 @@ import re
 
 import discord
 from discord.ext import commands
+from keep_alive import keep_alive
 
 import components.constants.const as c
 import components.constants.regex as regex
@@ -16,7 +17,6 @@ TOKEN = os.environ['DISCORD_TOKEN']
 intents = discord.Intents.default()
 intents.message_content = True
 
-
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 
@@ -25,7 +25,8 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
-    await bot.change_presence(activity=discord.Game(name="In Q with your friends!"))
+    await bot.change_presence(activity=discord.Game(
+        name="In Q with your friends!"))
 
 
 @bot.command()
@@ -40,7 +41,8 @@ async def t(
     now_datetime = datetime.datetime.now()
     # key: 参加者ユーザーネーム value:メンションID
     in_queue_member_dict = {
-        ctx.message.author.global_name: ctx.message.author.mention}
+        ctx.message.author.global_name: ctx.message.author.mention
+    }
     recruiter = ctx.author
     mention_target = ""
     is_feedback_on_recruitment = True
@@ -51,10 +53,12 @@ async def t(
     print(args)
     for setting_param in args:
         # setting_param: @here形式の場合に処理を行う
-        if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
+        if re.match(regex.MENTION_IS_HERE,
+                    str(setting_param)) != None and mention_target == "":
             mention_target = c.HERE_MENTION
         # setting_param: @everyone形式の場合に処理を行う
-        if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
+        if re.match(regex.MENTION_IS_EVERYONE,
+                    str(setting_param)) != None and mention_target == "":
             mention_target = c.EVE_MENTION
         # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
         if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
@@ -75,11 +79,11 @@ async def t(
             is_feedback_on_recruitment,
             deadline_time,
             is_deadline,
-        )
-    )
+        ))
     if total_seconds > 0:
         await asyncio.sleep(total_seconds)
-        if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
+        if "False" != in_queue_member_dict[next(
+                iter(reversed(in_queue_member_dict)))]:
             mentions = ""
             for mention in in_queue_member_dict.values():
                 mentions += mention + ' '
@@ -89,4 +93,6 @@ async def t(
             )
             return
 
+
+keep_alive()
 bot.run(TOKEN)
