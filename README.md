@@ -27,5 +27,3 @@ docker compose exec python3 bash
 cd src
 python main.py
 ```
-
-withQ
