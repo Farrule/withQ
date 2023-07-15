@@ -2,17 +2,16 @@ import asyncio
 import datetime
 import os
 import re
-from os.path import dirname, join
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
 import components.constants.const as c
 import components.constants.regex as regex
 import components.deadline_time as dt
 import components.row_view as row_view
 
+TOKEN = os.environ['DISCORD_TOKEN']
 # instance
 intents = discord.Intents.default()
 intents.message_content = True
@@ -90,4 +89,4 @@ async def t(
             )
             return
 
-bot.run(DISCORD_TOKEN)
+bot.run(TOKEN)
