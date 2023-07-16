@@ -30,7 +30,7 @@ async def on_ready():
 
 
 @bot.command()
-async def t(
+async def w(
     ctx,
     title: str,
     recruitment_num: int,
