@@ -8,8 +8,8 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import components.constants.regex as regex
 import components.constants.const as c
+import components.constants.regex as regex
 import components.deadline_time as dt
 import components.row_view as row_view
 
@@ -17,7 +17,7 @@ import components.row_view as row_view
 load_dotenv(verbose=True)
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("DEBUG")
 
 
 # instance
@@ -37,7 +37,7 @@ async def on_ready():
 
 
 @bot.command()
-async def w(
+async def t(
     ctx,
     title: str,
     recruitment_num: int,
@@ -103,4 +103,5 @@ async def w(
         return
 
 
+bot.run(TOKEN)
 bot.run(TOKEN)
