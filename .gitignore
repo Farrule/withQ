@@ -1,5 +1,4 @@
-.env
 .vscode
 components/__pycache__
 components/constants/__pycache__
-TODO.md
+TOKEN.md
