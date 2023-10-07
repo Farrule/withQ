@@ -50,9 +50,7 @@ async def w(
     total_seconds = 0
     is_deadline = False
 
-    print(args)
     try:
-        print(args)
         for setting_param in args:
             # setting_param: @here形式の場合に処理を行う
             if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
