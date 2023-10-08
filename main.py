@@ -51,6 +51,10 @@ async def w(
     is_deadline = False
 
     try:
+        # 募集人数が1人以上でない場合、returnする
+        if recruitment_num <= 0:
+            return
+
         for setting_param in args:
             # setting_param: @here形式の場合に処理を行う
             if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
