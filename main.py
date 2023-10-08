@@ -33,9 +33,8 @@ async def on_ready():
 async def withQ(ctx):
     """withQ help command"""
 
-    filename = "./HELP.md"
-    embed_message = create_embed(filename)
-    await ctx.send(embed=embed_message)
+    embed=discord.Embed(description=c.EMBED_TEXT)
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def w(
