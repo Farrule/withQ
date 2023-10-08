@@ -1,6 +1,6 @@
 # withQ
 
-![Alt text](assets/icon/logo_transparent.png)
+![Alt text](assets/icon/mini_logo.png)
 
 ## 概要
 
