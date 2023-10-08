@@ -33,7 +33,7 @@ async def on_ready():
 async def withQ(ctx):
     """withQ help command"""
 
-    filename = "README.md"
+    filename = "HELP.md"
     embed_message = create_embed(filename)
     await ctx.send(embed=embed_message)
 
