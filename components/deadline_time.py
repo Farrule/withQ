@@ -13,7 +13,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
             time_in_seconds = datetime.datetime.strptime(
                 str(now_datetime.year) + str(now_datetime.month) + str(now_datetime.day) + setting_param.replace(':', ''), "%Y%m%d%H%M")
             if time_in_seconds >= now_datetime:
-                deadline_time = c.DEADLINE + ': ' + setting_param
+                deadline_time = c.DEADLINE_TEXT + ': ' + setting_param
                 time_delta = time_in_seconds - now_datetime
                 total_seconds = time_delta.total_seconds()
                 is_deadline = True
@@ -22,7 +22,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
             time_in_datetime = datetime.datetime.strptime(
                 str(now_datetime.year) + setting_param.replace('/', '').replace(':', ''), "%Y%m%d%H%M")
             if time_in_datetime >= now_datetime:
-                deadline_time = c.DEADLINE + ': ' + setting_param
+                deadline_time = c.DEADLINE_TEXT + ': ' + setting_param
                 time_delta = time_in_datetime - now_datetime
                 total_seconds = time_delta.total_seconds()
                 is_deadline = True
@@ -31,7 +31,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
             time_in_datetime = datetime.datetime.strptime(
                 setting_param.replace('/', '').replace(':', ''), "%Y%m%d%H%M")
             if time_in_datetime >= now_datetime:
-                deadline_time = c.DEADLINE + ': ' + setting_param
+                deadline_time = c.DEADLINE_TEXT + ': ' + setting_param
                 time_delta = time_in_datetime - now_datetime
                 total_seconds = time_delta.total_seconds()
                 is_deadline = True
