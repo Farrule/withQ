@@ -10,6 +10,7 @@ import components.constants.const as c
 import components.constants.regex as regex
 import components.deadline_time as dt
 import components.row_view as row_view
+import components.create_embed as create_embed
 from keep_alive import keep_alive
 
 TOKEN = os.environ['DISCORD_TOKEN']
@@ -28,6 +29,13 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(
         name="In Q with your friends!"))
 
+@bot.command()
+async def withQ(ctx):
+    """withQ help command"""
+
+    filename = "README.md"
+    embed_message = create_embed(filename)
+    await ctx.send(embed=embed_message)
 
 @bot.command()
 async def w(

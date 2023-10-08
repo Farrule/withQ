@@ -4,8 +4,6 @@ import re
 import components.constants.const as c
 import components.constants.regex as regex
 
-# import constants.regex as regex
-
 
 def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime, is_deadline: bool):
     if deadline_time == "":
