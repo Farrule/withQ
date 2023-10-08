@@ -8,4 +8,6 @@ def create_embed(filename):
     parsed = markdown.markdown(md)
     embed = discord.Embed(title=filename, description=parsed)
 
+    print("embed created!")
+
     return embed
