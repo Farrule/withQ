@@ -44,10 +44,8 @@ class DeQButton(Button):
                 await self.recruiter.send(
                     content=f'あなたが募集している {self.title} から {interaction.user.global_name} が参加を取り消しました。',
                 )
-            print(self.in_queue_member_dict)
             return
         # ボタン押下者が参加者ディレクトリに存在しない場合、その募集に参加していない旨を伝えるメッセージを送信する
         elif interaction.user.global_name not in self.in_queue_member_dict.keys():
             await interaction.response.send_message("あなたはこの募集に参加していません。", ephemeral=True)
-            print(self.in_queue_member_dict)
             return
