@@ -127,7 +127,6 @@ async def w(
                 total_seconds, deadline_time, is_deadline = dt.deadline_time(
                     deadline_time, setting_param, now_datetime, is_deadline)
 
-        print(total_seconds)
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
