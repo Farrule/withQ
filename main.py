@@ -8,7 +8,6 @@ from discord.ext import commands
 
 import components.constants.const as c
 import components.constants.regex as regex
-import components.create_embed as create_embed
 import components.deadline_time as dt
 import components.row_view as row_view
 from keep_alive import keep_alive
