@@ -54,7 +54,7 @@ async def withQ(ctx):
         '\n'
         '有効な値は以下の通りです。\n'
         'コマンドの値・・・機能\n'
-        '・・・hh:mm・・・入力された時間に募集を締め切ります。\n'
+        'hh:mm・・・入力された時間に募集を締め切ります。\n'
         'mm/dd/hh:mm・・・入力された日付と時間に募集を締め切ります。  \n'
         'yyyy/mm/dd/hh:mm・・・入力された年月日と時間に募集を締め切ります。\n'
         '\n'
@@ -104,7 +104,7 @@ async def w(
     mention_target = ""
     is_feedback_on_recruitment = True
     deadline_time = ""
-    total_seconds = 0
+    total_seconds = c.AUTO_DEADLINE
     is_deadline = False
 
     try:
@@ -126,8 +126,8 @@ async def w(
             if re.match(regex.DATETIME_TYPE, str(setting_param)) != None:
                 total_seconds, deadline_time, is_deadline = dt.deadline_time(
                     deadline_time, setting_param, now_datetime, is_deadline)
-            if re.match(regex.DATETIME_TYPE, str(setting_param)) == None:
-                total_seconds = c.AUTO_DEADLINE
+
+        print(total_seconds)
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -144,6 +144,13 @@ async def w(
         )
         if total_seconds > 0:
             await asyncio.sleep(total_seconds)
+            if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
+                if len(in_queue_member_dict) <= 1:
+                    await bot_message.edit(
+                        content=f'{title}\n上記の募集は成立しませんでした。',
+                        view=None,
+                    )
+                return
             if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
                 mentions = ""
                 for mention in in_queue_member_dict.values():
