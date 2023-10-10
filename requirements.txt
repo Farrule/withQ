@@ -1,3 +1,2 @@
 discord.py==2.3.2;
 Flask==3.0.0;
-markdown==3.4.4;
