@@ -27,4 +27,4 @@ class RowView(View):
         self.add_item(closing_button.ClosingQButton(
             title, recruitment_num, in_queue_member_dict, deadline_time, is_deadline))
         self.add_item(cancel_button.CancelButton(
-            in_queue_member_dict, is_deadline))
+            title, in_queue_member_dict, is_deadline))
