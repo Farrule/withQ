@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 import os
-import random
 import re
 
 import discord
@@ -161,32 +160,6 @@ async def w(
                     view=None,
                 )
                 return
-
-    except:
-        await ctx.send("error occurred")
-        return
-
-
-@bot.command()
-async def playW(
-    ctx,
-    *args,
-):
-    """Runlet command"""
-
-    try:
-        candidate = []
-
-        # コマンドで受け取った候補を配列に格納する
-        for temp in args:
-            candidate.append(temp)
-
-        print(candidate)
-
-        # 候補配列からランダムに1つ選び、メッセージを送信する
-        await ctx.send(
-            f'{candidate[random.randint(0, len(candidate))]}'
-        )
 
     except:
         await ctx.send("error occurred")
