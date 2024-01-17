@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import os
+import random
 import re
 
 import discord
@@ -17,6 +18,7 @@ TOKEN = os.environ['DISCORD_TOKEN']
 intents = discord.Intents.default()
 intents.message_content = True
 
+
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 
@@ -25,12 +27,11 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
-    await bot.change_presence(activity=discord.Game(
-        name="In Q with your friends!"))
+    await bot.change_presence(activity=discord.Game(name="In Q with your friends!"))
 
 
 @bot.command()
-async def withQ(ctx):
+async def withD(ctx):
     """withQ help command"""
 
     embed = discord.Embed(
@@ -87,7 +88,7 @@ async def withQ(ctx):
 
 
 @bot.command()
-async def w(
+async def t(
     ctx,
     title: str,
     recruitment_num: int,
@@ -108,7 +109,6 @@ async def w(
     is_deadline = False
 
     try:
-        await tree.sync(bot.remove_command("test3"))
         # 募集人数が1人以上でない場合、returnする
         if recruitment_num <= 0:
             return
@@ -128,6 +128,7 @@ async def w(
                 total_seconds, deadline_time, is_deadline = dt.deadline_time(
                     deadline_time, setting_param, now_datetime, is_deadline)
 
+        print(total_seconds)
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -165,6 +166,32 @@ async def w(
         await ctx.send("error occurred")
         return
 
+
+@bot.command()
+async def playW(
+    ctx,
+    *args,
+):
+    """Runlet command"""
+
+    try:
+        print("playW command")
+        candidate = []
+
+        # コマンドで受け取った候補を配列に格納する
+        for temp in args:
+            candidate.append(temp)
+
+        print(candidate)
+
+        # 候補配列からランダムに1つ選び、メッセージを送信する
+        await ctx.send(
+            f'{candidate[random.randint(0, len(candidate))]}'
+        )
+
+    except:
+        await ctx.send("error occurred")
+        return
 
 keep_alive()
 bot.run(TOKEN)
