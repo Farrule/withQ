@@ -5,6 +5,7 @@ import random
 import re
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 import components.constants.const as c
@@ -18,6 +19,8 @@ TOKEN = os.environ['DISCORD_TOKEN']
 intents = discord.Intents.default()
 intents.message_content = True
 
+client = discord.Client(intents=discord.Intents.all())
+tree = app_commands.CommandTree(client)
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 
@@ -112,6 +115,7 @@ async def w(
     is_deadline = False
 
     try:
+        await tree.sync(bot.remove_command("test3"))
         # 募集人数が1人以上でない場合、returnする
         if recruitment_num <= 0:
             return
