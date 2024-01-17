@@ -38,7 +38,7 @@ async def on_ready():
 
 
 @bot.command()
-async def withD(ctx):
+async def withT(ctx):
     """withQ help command"""
 
     embed = discord.Embed(

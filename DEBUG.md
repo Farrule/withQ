@@ -10,7 +10,6 @@ TOKEN={discord bot token}
 # docker build
 
 ```
-cd docker
 docker compose up -d --build
 ```
 
