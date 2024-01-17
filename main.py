@@ -5,7 +5,6 @@ import random
 import re
 
 import discord
-from discord import app_commands
 from discord.ext import commands
 
 import components.constants.const as c
@@ -20,7 +19,6 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=discord.Intents.all())
-tree = app_commands.CommandTree(client)
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 
@@ -31,9 +29,6 @@ async def on_ready():
     print("------")
     await bot.change_presence(activity=discord.Game(
         name="In Q with your friends!"))
-
-
-bot.remove_command("test3")
 
 
 @bot.command()
