@@ -30,6 +30,9 @@ async def on_ready():
         name="In Q with your friends!"))
 
 
+bot.remove_command("test3")
+
+
 @bot.command()
 async def withQ(ctx):
     """withQ help command"""
