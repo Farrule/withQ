@@ -16,6 +16,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
                 total_seconds = time_delta.total_seconds()
                 is_deadline = True
                 return total_seconds, deadline_time, is_deadline
+
         if re.match(regex.DATETIME, str(setting_param)) != None:
             time_in_datetime = datetime.datetime.strptime(
                 str(now_datetime.year) + setting_param.replace('/', '').replace(':', ''), "%Y%m%d%H%M")
@@ -25,6 +26,7 @@ def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime
                 total_seconds = time_delta.total_seconds()
                 is_deadline = True
                 return total_seconds, deadline_time, is_deadline
+
         if re.match(regex.YEARDATETIME, str(setting_param)) != None:
             time_in_datetime = datetime.datetime.strptime(
                 setting_param.replace('/', '').replace(':', ''), "%Y%m%d%H%M")

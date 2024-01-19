@@ -134,6 +134,9 @@ async def t(
             if re.match(regex.DATETIME_TYPE, str(setting_param)) != None:
                 total_seconds, deadline_time, is_deadline = dt.deadline_time(
                     deadline_time, setting_param, now_datetime, is_deadline)
+            # setting_param: 開始時間が設定されていない場合、締め切り時間を設定する
+            if re.match(regex.DATETIME_TYPE, str(setting_param)) == None:
+                total_seconds = c.AUTO_DEADLINE
 
         print(total_seconds)  # debug
         # 募集メッセージを作成、送信する
