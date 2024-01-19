@@ -38,7 +38,7 @@ async def on_ready():
 
 
 @bot.command()
-async def withT(ctx):
+async def withD(ctx):
     """withQ help command"""
 
     embed = discord.Embed(
@@ -135,7 +135,7 @@ async def t(
                 total_seconds, deadline_time, is_deadline = dt.deadline_time(
                     deadline_time, setting_param, now_datetime, is_deadline)
 
-        print(total_seconds)
+        print(total_seconds)  # debug
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -150,6 +150,7 @@ async def t(
                 is_deadline,
             )
         )
+
         if total_seconds > 0:
             await asyncio.sleep(total_seconds)
             if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
@@ -170,7 +171,7 @@ async def t(
                 return
 
     except:
-        await ctx.send("error occurred")
+        await ctx.send("募集を開始できませんでした。")
         return
 
 
