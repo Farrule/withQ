@@ -20,7 +20,6 @@ class ClosingQButton(Button):
                 mentions += mention + ' '
             if self.is_deadline:
                 self.in_queue_member_dict["is_deadline_param"] = "False"
-            # self.is_deadline = False
             await interaction.response.edit_message(
                 content=f'{mentions}\n{self.title} {self.deadline_time if self.deadline_time != None else ""}\n上記の募集を締め切りました。',
                 view=None,
