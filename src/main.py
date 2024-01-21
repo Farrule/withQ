@@ -6,12 +6,13 @@ import re
 from os.path import dirname, join
 
 import discord
-import libs.constants.const as c
-import libs.constants.regex as regex
-import libs.deadline_time as dt
-import libs.row_view as row_view
 from discord.ext import commands
 from dotenv import load_dotenv
+
+import src.libs.components.deadline_time as dt
+import src.libs.constants.const as c
+import src.libs.constants.regex as regex
+import src.libs.row_view as row_view
 
 # get bot TOKEN from ./env file
 load_dotenv(verbose=True)
@@ -21,10 +22,11 @@ load_dotenv(dotenv_path)
 # .envファイルのEXECUTION_ENVパラメータで実行環境とbotの切り替えを行う
 if os.getenv("EXECUTION_ENV") == "DEBUG":
     TOKEN = os.getenv("DEVELOPMENT_TOKEN")
-    import withQ.tests.development_const as env_c
+    import src.tests.development_const as env_c
+
 elif os.environ("EXECUTION_ENV") == "PRODUCTION":
     TOKEN = os.environ("PRODUCTION_TOKEN")
-    import withQ.config.production_const as env_c
+    import src.config.production_const as env_c
 
 # instance
 intents = discord.Intents.default()

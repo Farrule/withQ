@@ -1,8 +1,8 @@
 import datetime
 import re
 
-import withQ.libs.constants.const as c
-import withQ.libs.constants.regex as regex
+import src.libs.constants.const as c
+import src.libs.constants.regex as regex
 
 
 def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime, is_deadline: bool):

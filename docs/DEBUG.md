@@ -29,7 +29,6 @@ docker compose exec python3 bash
 ※dockerのコンテナ内のbashで実行
 
 ```bash
-#!~/src
-cd src
+#!~/withQ
 python main.py
 ```
