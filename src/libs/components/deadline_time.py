@@ -1,8 +1,8 @@
 import datetime
 import re
 
-import src.libs.constants.const as c
-import src.libs.constants.regex as regex
+import libs.constants.const as c
+import libs.constants.regex as regex
 
 
 def deadline_time(deadline_time: str, setting_param: str, now_datetime: datetime, is_deadline: bool):

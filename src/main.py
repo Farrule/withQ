@@ -9,10 +9,10 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import src.libs.components.deadline_time as dt
-import src.libs.constants.const as c
-import src.libs.constants.regex as regex
-import src.libs.row_view as row_view
+import libs.components.deadline_time as dt
+import libs.constants.const as c
+import libs.constants.regex as regex
+import libs.row_view as row_view
 
 # get bot TOKEN from ./env file
 load_dotenv(verbose=True)
@@ -25,7 +25,7 @@ if os.getenv("EXECUTION_ENV") == "DEBUG":
     import src.tests.development_const as env_c
 
 elif os.environ("EXECUTION_ENV") == "PRODUCTION":
-    TOKEN = os.environ("PRODUCTION_TOKEN")
+    TOKEN = os.environ["PRODUCTION_TOKEN"]
     import src.config.production_const as env_c
 
 # instance
