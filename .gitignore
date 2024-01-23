@@ -1,5 +1,8 @@
 .env
 .vscode
 __pycache__
+src/libs/constants/__pycache__
+src/libs/components/__pycache__
+src/libs/tests/__pycache__
 TODO.md
 TOKEN.md
