@@ -13,6 +13,7 @@ import libs.components.deadline_time as dt
 import libs.constants.const as c
 import libs.constants.regex as regex
 import libs.row_view as row_view
+from keep_alive import keep_alive
 
 # .envファイルを取得する
 load_dotenv(verbose=True)
@@ -222,4 +223,5 @@ async def playW(
         await ctx.send("error occurred")
         return
 
+keep_alive()
 bot.run(TOKEN)
