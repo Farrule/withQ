@@ -14,21 +14,26 @@ import libs.constants.const as c
 import libs.constants.regex as regex
 import libs.row_view as row_view
 
-# get bot TOKEN from ./env file
+# .envファイルを取得する
 load_dotenv(verbose=True)
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+env_file_path = os.path.join(parent_dir, ".env")
+load_dotenv(env_file_path)
+
 
 # .envファイルのEXECUTION_ENVパラメータで実行環境とbotの切り替えを行う
 if os.getenv("EXECUTION_ENV") == "DEBUG":
     TOKEN = os.getenv("DEVELOPMENT_TOKEN")
-    import src.tests.development_const as env_c
+    print(f'USE DEVELOPMENT TOKEN:{TOKEN}')
+    import tests.development_const as env_c
 
-elif os.environ("EXECUTION_ENV") == "PRODUCTION":
-    TOKEN = os.environ["PRODUCTION_TOKEN"]
-    import src.config.production_const as env_c
+elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
+    TOKEN = os.environ.get("PRODUCTION_TOKEN")
+    print(f'USE PRODUCTION TOKEN:{TOKEN}')
+    import config.production_const as env_c
 
-# instance
+# intents
 intents = discord.Intents.default()
 intents.message_content = True
 

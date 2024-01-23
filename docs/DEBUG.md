@@ -10,6 +10,13 @@
 TOKEN={discord bot token}
 ```
 
+## ローカルの.envファイルをdocker内の.envファイルと同期させる
+
+```bash
+#!/.env
+docker cp ./.env withQ_project:/root/.env
+```
+
 ## docker build
 
 ```bash
