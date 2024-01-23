@@ -44,5 +44,6 @@ python main.py
 
 ```bash
 #!~ withQ/master
+git fetch upstream
 git merge --allow-unrelated-histories upstream/master
 ```
