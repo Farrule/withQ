@@ -33,6 +33,9 @@ elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
     print(f'USE PRODUCTION TOKEN:{TOKEN}')
     import config.production_const as env_c
 
+else:
+    print('Can`t Start This Service')
+
 # intents
 intents = discord.Intents.default()
 intents.message_content = True
