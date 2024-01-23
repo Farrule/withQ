@@ -9,19 +9,31 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import components.constants.const as c
-import components.constants.regex as regex
-import components.deadline_time as dt
-import components.row_view as row_view
+import libs.components.deadline_time as dt
+import libs.constants.const as c
+import libs.constants.regex as regex
+import libs.row_view as row_view
 
-# get bot TOKEN from ./env file
+# .envファイルを取得する
 load_dotenv(verbose=True)
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-TOKEN = os.getenv("DEBUG")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+env_file_path = os.path.join(parent_dir, ".env")
+load_dotenv(env_file_path)
 
 
-# instance
+# .envファイルのEXECUTION_ENVパラメータで実行環境とbotの切り替えを行う
+if os.getenv("EXECUTION_ENV") == "DEBUG":
+    TOKEN = os.getenv("DEVELOPMENT_TOKEN")
+    print(f'USE DEVELOPMENT TOKEN:{TOKEN}')
+    import tests.development_const as env_c
+
+elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
+    TOKEN = os.environ.get("PRODUCTION_TOKEN")
+    print(f'USE PRODUCTION TOKEN:{TOKEN}')
+    import config.production_const as env_c
+
+# intents
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -32,9 +44,9 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 # startup process
 @bot.event
 async def on_ready():
+    await bot.change_presence(activity=discord.Game(name="In Q with your friends!"))
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
-    await bot.change_presence(activity=discord.Game(name="In Q with your friends!"))
 
 
 @bot.command()
@@ -112,7 +124,7 @@ async def t(
     mention_target = ""
     is_feedback_on_recruitment = True
     deadline_time = ""
-    total_seconds = c.AUTO_DEADLINE
+    total_seconds = env_c.AUTO_DEADLINE
     is_deadline = False
 
     try:
@@ -134,8 +146,12 @@ async def t(
             if re.match(regex.DATETIME_TYPE, str(setting_param)) != None:
                 total_seconds, deadline_time, is_deadline = dt.deadline_time(
                     deadline_time, setting_param, now_datetime, is_deadline)
+            # setting_param: 開始時間が設定されていない場合、締め切り時間を設定する
+            if re.match(regex.DATETIME_TYPE, str(setting_param)) == None:
+                total_seconds = env_c.AUTO_DEADLINE
 
-        print(total_seconds)  # debug
+        print(f'締め切り時間:{total_seconds} sec')
+
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -159,16 +175,18 @@ async def t(
                         content=f'{title}\n上記の募集は成立しませんでした。',
                         view=None,
                     )
-                return
-            if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
-                mentions = ""
-                for mention in in_queue_member_dict.values():
-                    mentions += mention + ' '
-                await bot_message.edit(
-                    content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
-                    view=None,
-                )
-                return
+                    print('---no member recruitment time out---')
+                    return
+                if len(in_queue_member_dict) >= 1:
+                    mentions = ""
+                    for mention in in_queue_member_dict.values():
+                        mentions += mention + ' '
+                    await bot_message.edit(
+                        content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
+                        view=None,
+                    )
+                    print('---anyone member recruitment time out---')
+                    return
 
     except:
         await ctx.send("募集を開始できませんでした。")
