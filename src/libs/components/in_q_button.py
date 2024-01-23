@@ -40,6 +40,7 @@ class InQButton(Button):
                 return
             # 募集人数に達していない場合、募集用メッセージを編集する
             if len(self.in_queue_member_dict) <= self.recruitment_num:
+                print('---message edit start---')
                 users = ""
                 for user in self.in_queue_member_dict:
                     if user != next(iter(self.in_queue_member_dict)):
@@ -52,6 +53,7 @@ class InQButton(Button):
                     await self.recruiter.send(
                         content=f'あなたが募集している {self.title} に {interaction.user.global_name} が参加しました。',
                     )
+                print('---message edit end---')
                 return
         # ボタン押下者が対象の募集にすでに参加している場合、その旨を伝えるメッセージを送信する
         elif interaction.user.global_name in self.in_queue_member_dict:

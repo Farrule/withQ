@@ -150,7 +150,8 @@ async def t(
             if re.match(regex.DATETIME_TYPE, str(setting_param)) == None:
                 total_seconds = env_c.AUTO_DEADLINE
 
-        print(total_seconds)  # debug
+        print(f'締め切り時間:{total_seconds} sec')
+
         # 募集メッセージを作成、送信する
         bot_message = await ctx.send(
             f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -174,16 +175,18 @@ async def t(
                         content=f'{title}\n上記の募集は成立しませんでした。',
                         view=None,
                     )
-                return
-            if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
-                mentions = ""
-                for mention in in_queue_member_dict.values():
-                    mentions += mention + ' '
-                await bot_message.edit(
-                    content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
-                    view=None,
-                )
-                return
+                    print('---no member recruitment time out---')
+                    return
+                if len(in_queue_member_dict) >= 1:
+                    mentions = ""
+                    for mention in in_queue_member_dict.values():
+                        mentions += mention + ' '
+                    await bot_message.edit(
+                        content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
+                        view=None,
+                    )
+                    print('---anyone member recruitment time out---')
+                    return
 
     except:
         await ctx.send("募集を開始できませんでした。")
