@@ -16,5 +16,8 @@ RUN pip install --upgrade setuptools
 
 RUN pip install -U discord.py
 RUN pip install python-dotenv
+RUN pip install Flask
 
 RUN python -m pip install jupyterlab
+
+COPY ./ /root/withQ
