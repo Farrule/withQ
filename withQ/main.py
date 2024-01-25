@@ -6,13 +6,12 @@ import re
 from os.path import dirname, join
 
 import discord
-from discord.ext import commands
-from dotenv import load_dotenv
-
 import libs.components.deadline_time as dt
 import libs.constants.const as c
 import libs.constants.regex as regex
 import libs.row_view as row_view
+from discord.ext import commands
+from dotenv import load_dotenv
 from keep_alive import keep_alive
 
 # .envファイルを取得する
@@ -105,6 +104,9 @@ async def withQ(ctx):
         'DE Q・・・すでに対象の募集に参加している場合、押下することで募集を取り消すことができます。\n'
         '〆・・・募集者のみが押下することができます。押下時点で募集を締め切り、参加者をメンションします。\n'
         'CANCEL・・・募集者のみが押下することができます。押下することで募集を終了することができます。\n'
+        '\n'
+        '\n'
+        'withQ ver 0.2.1'
     )
 
     await ctx.send(embed=embed)
