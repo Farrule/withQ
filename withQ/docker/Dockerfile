@@ -3,7 +3,7 @@ USER root
 
 RUN apt-get update
 RUN apt-get -y install locales && localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
-RUN sudo apt-get install tree
+RUN apt-get install tree
 
 ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:ja_JP
