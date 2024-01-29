@@ -22,3 +22,4 @@ RUN pip install Flask
 RUN python -m pip install jupyterlab
 
 COPY ./ /root/withQ
+CMD python main.py
