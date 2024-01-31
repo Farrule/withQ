@@ -4,6 +4,5 @@ __pycache__
 src/libs/constants/__pycache__
 src/libs/components/__pycache__
 src/libs/tests/__pycache__
-Dockerfile
 TODO.md
 TOKEN.md
