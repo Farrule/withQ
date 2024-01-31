@@ -4,7 +4,7 @@ services:
     restart: always
     build: .
     container_name: 'withQ_project'
-    working_dir: '/root/'
+    working_dir: '/withQ/'
     tty: true
     volumes:
-      - ..:/root/withQ
+      - .:/withQ

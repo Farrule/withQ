@@ -1,6 +1,6 @@
 # withQ
 
-![Alt text](assets/icon/mini_logo.png)
+![Alt text](withQ/assets/icon/mini_logo.png)
 
 ## 概要
 
@@ -39,7 +39,7 @@ withQ が追加されたサーバーにコマンドを送信します。</br>
 
 コマンドの入力例
 
-![Alt text](assets/command_example.png)
+![Alt text](withQ/assets/command_example.png)
 
 ### 各値について
 
