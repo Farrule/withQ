@@ -48,7 +48,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 # startup process
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Game(name="In Q with your friends!"))
+    await bot.change_presence(activity=discord.CustomActivity(name="In Q with your friends!"))
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
 
