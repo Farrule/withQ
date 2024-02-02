@@ -6,13 +6,14 @@ import re
 from os.path import dirname, join
 
 import discord
-import libs.components.deadline_time as dt
-import libs.constants.const as c
-import libs.constants.regex as regex
-import libs.row_view as row_view
 from discord.ext import commands
 from dotenv import load_dotenv
-from keep_alive import keep_alive
+
+import withQ.libs.components.deadline_time as dt
+import withQ.libs.constants.const as c
+import withQ.libs.constants.regex as regex
+import withQ.libs.row_view as row_view
+from withQ.config.keep_alive import keep_alive
 
 # .envファイルを取得する
 load_dotenv(verbose=True)
@@ -26,12 +27,12 @@ load_dotenv(env_file_path)
 if os.getenv("EXECUTION_ENV") == "DEBUG":
     TOKEN = os.getenv("DEVELOPMENT_TOKEN")
     print(f'USE DEVELOPMENT TOKEN:{TOKEN}')
-    import tests.development_const as env_c
+    import withQ.tests.development_const as env_c
 
 elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
     TOKEN = os.environ.get("PRODUCTION_TOKEN")
     print(f'USE PRODUCTION TOKEN:{TOKEN}')
-    import config.production_const as env_c
+    import withQ.config.production_const as env_c
 
 else:
     print('Can`t Start This Service')
