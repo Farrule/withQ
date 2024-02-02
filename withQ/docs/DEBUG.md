@@ -39,3 +39,11 @@ docker compose exec python3 bash
 #!~/withQ
 python main.py
 ```
+
+## 本番環境用リポジトリとの同期
+
+```bash
+#!~ withQ/master
+git fetch upstream
+git merge --allow-unrelated-histories upstream/master
+```
