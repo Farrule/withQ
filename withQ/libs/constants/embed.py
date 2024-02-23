@@ -50,5 +50,5 @@ embed = discord.Embed(
     'CANCEL・・・募集者のみが押下することができます。押下することで募集を終了することができます。\n'
     '\n'
     '\n'
-    'withQ ver 0.2.1'
+    'withQ ver 1.0.0'
 )
