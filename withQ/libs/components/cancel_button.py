@@ -14,10 +14,13 @@ class CancelButton(Button):
         # ボタン押下者が募集主の場合、募集が終了した旨を伝える募集メッセージに編集する
         if interaction.user.global_name == next(iter(self.in_queue_member_dict)):
             mentions = ""
+
             for mention in self.in_queue_member_dict.values():
                 mentions += mention + ' '
+
             if self.is_deadline:
                 self.in_queue_member_dict["is_deadline_param"] = "False"
+
             await interaction.response.edit_message(content=f'{mentions}\n{self.title}\n上記の募集は取り消されました。', view=None)
             return
         # ボタン押下者が募集主ではない場合、募集を取り消すことができない旨を伝えるメッセージを送信する
