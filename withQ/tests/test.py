@@ -7,6 +7,20 @@ import withQ.libs.constants.regex as regex
 
 
 def deadline_time(deadline_time: str, now_datetime: datetime.datetime) -> tuple[float, str, bool]:
+    """
+    締め切りまでの残り時間を秒単位で計算し、締め切り文字列をフォーマットします。
+
+    Args:
+        deadline_time: 締め切り時間文字列 (例: "HH:MM", "YYYY-MM-DD HH:MM", "YYYY/MM/DD HH:MM")
+        now_datetime: 現在の日時オブジェクト
+
+    Returns:
+        以下のタプルを返す:
+            - total_seconds: 締め切りまでの残り秒数
+            - deadline_time: "締め切り:" プレフィックス付きのフォーマット済み締め切り文字列
+            - is_deadline: 締め切りが過ぎている場合は True、それ以外の場合は False
+    """
+
     try:
         # 締め切り時間形式の妥当性をチェック
         if not re.match(regex.DATETIME_TYPE, deadline_time):
