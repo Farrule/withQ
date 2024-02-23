@@ -1,19 +1,14 @@
-import asyncio
-import datetime
 import os
-import random
-import re
 from os.path import dirname, join
 
 import discord
-from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 
-import withQ.libs.components.deadline_time as dt
-import withQ.libs.constants.const as c
-import withQ.libs.constants.embed as embed
-import withQ.libs.constants.regex as regex
-import withQ.libs.row_view as row_view
+import withQ.libs.commands.help_command as HelpCommand
+import withQ.libs.commands.random_command as RandomCommand
+import withQ.libs.commands.update_command as UpdateCommand
+import withQ.libs.commands.withQ_command as WithQCommand
 from withQ.config.keep_alive import keep_alive
 
 # .envファイルを取得する
@@ -38,142 +33,109 @@ elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
 else:
     print('Can`t Start This Service')
 
-# intents
+# bot初期化
 intents = discord.Intents.default()
 intents.message_content = True
+client = discord.Client(command_prefix='/', intents=intents)
+tree = app_commands.CommandTree(client)
 
 
-bot = commands.Bot(command_prefix='/', intents=intents)
-
-
-# bot起動時にステータスメッセージを変更してbotの情報を出力する
-@bot.event
+# client起動時にステータスメッセージを変更してclientの情報を出力する
+@client.event
 async def on_ready():
-    await bot.change_presence(activity=discord.CustomActivity(name="In Q with your friends!"))
-    print(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    await client.change_presence(activity=discord.CustomActivity(name="In Q with your friends!"))
+    print(f"Logged in as {client.user} (ID: {client.user.id})")
+
+    # コマンドツリーの同期
+    try:
+        await tree.sync()
+        print("Update success!")
+    except Exception as e:
+        print("Update failure!")
+        print(e)
+
     print("------")
 
 
-# withQコマンドが送信された時にembedを送信する
-@bot.command()
-async def withQ(ctx):
-    """withQ help command"""
-
-    await ctx.send(embed=embed.embed)
+# botがサーバーに参加した時にコマンドを同期する
+@client.event
+async def on_guild_join(guild):
+    await tree.sync()
 
 
-@bot.command()
-async def w(
-    ctx,
+# botがサーバーを退出したときににコマンドを削除する
+@client.event
+async def on_guild_remove(guild):
+    await tree.clear_commands(guild.id, type=None)
+
+
+# /update コマンドツリーの更新を行うコマンド
+@tree.command(
+    name="update",
+    description="withQのコマンドを更新します"
+)
+async def update_command(interaction: discord.Interaction):
+    await UpdateCommand.command(tree, interaction)
+
+
+# /help embedをコマンド入力者に送信する
+@tree.command(
+    name="help",
+    description="withQのヘルプコマンド"
+)
+async def help_command(interaction: discord.Interaction):
+    await HelpCommand.command(tree, interaction)
+
+
+# /withQ 募集を実施するコマンド
+@app_commands.choices(
+    mention_target=[
+        discord.app_commands.Choice(name="everyone", value="@everyone"),
+        discord.app_commands.Choice(name="here", value="@here"),
+    ]
+)
+@tree.command(
+    name="withq",
+    description="募集内容や人数、時間を指定して募集を開始します"
+)
+async def withQ_command(
+    interaction: discord.Interaction,
     title: str,
     recruitment_num: int,
-    *args,
+    deadline_time: str = None,
+    mention_target: str = None,
+    feedback: bool = True,
 ):
-    """withQ command"""
-
-    now_datetime = datetime.datetime.now() + datetime.timedelta(hours=9)
-    # key: 参加者ユーザーネーム value:メンションID
-    in_queue_member_dict = {
-        ctx.message.author.global_name: ctx.message.author.mention
-    }
-    recruiter = ctx.author
-    mention_target = ""
-    is_feedback_on_recruitment = True
-    deadline_time = ""
-    total_seconds = env_c.AUTO_DEADLINE
-    is_deadline = False
-
-    try:
-        # 募集人数が1人以上でない場合、returnする
-        if recruitment_num <= 0:
-            return
-
-        for setting_param in args:
-            # setting_param: @here形式の場合に処理を行う
-            if re.match(regex.MENTION_IS_HERE, str(setting_param)) != None and mention_target == "":
-                mention_target = c.HERE_MENTION
-            # setting_param: @everyone形式の場合に処理を行う
-            if re.match(regex.MENTION_IS_EVERYONE, str(setting_param)) != None and mention_target == "":
-                mention_target = c.EVE_MENTION
-            # setting_param: is_feedback_on_recruitment形式の場合に処理を行う
-            if re.match(regex.FEEDBACK_ON_RECRUITMENT, str(setting_param)) != None:
-                is_feedback_on_recruitment = False
-            # setting_param: 開始時間の形式の場合に自動的に締め切り処理を行う
-            if re.match(regex.DATETIME_TYPE, str(setting_param)) != None:
-                total_seconds, deadline_time, is_deadline = dt.deadline_time(
-                    deadline_time, setting_param, now_datetime, is_deadline)
-            # setting_param: 開始時間が設定されていない場合、締め切り時間を設定する
-            if re.match(regex.DATETIME_TYPE, str(setting_param)) == None:
-                total_seconds = env_c.AUTO_DEADLINE
-
-        print(f'締め切り時間:{total_seconds} sec')
-
-        # 募集メッセージを作成、送信する
-        bot_message = await ctx.send(
-            f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-            view=row_view.RowView(
-                title,
-                recruitment_num,
-                in_queue_member_dict,
-                recruiter,
-                mention_target,
-                is_feedback_on_recruitment,
-                deadline_time,
-                is_deadline,
-            )
-        )
-
-        if total_seconds > 0:
-            await asyncio.sleep(total_seconds)
-            if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
-                if len(in_queue_member_dict) <= 1:
-                    await bot_message.edit(
-                        content=f'{title}\n上記の募集は成立しませんでした。',
-                        view=None,
-                    )
-                    print('---no member recruitment time out---')
-                    return
-                if len(in_queue_member_dict) >= 1:
-                    mentions = ""
-                    for mention in in_queue_member_dict.values():
-                        mentions += mention + ' '
-                    await bot_message.edit(
-                        content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
-                        view=None,
-                    )
-                    print('---anyone member recruitment time out---')
-                    return
-
-    except:
-        await ctx.send("募集を開始できませんでした。")
-        return
+    await WithQCommand.command(
+        tree,
+        interaction,
+        title,
+        recruitment_num,
+        deadline_time,
+        mention_target,
+        feedback,
+        env_c,
+    )
 
 
-@bot.command()
-async def playW(
-    ctx,
-    *args,
+# /random 入力された候補値からランダムに値を返すコマンド
+@app_commands.describe(
+    candidate="候補値の間にスペースを入れてください",
+)
+@tree.command(
+    name="random",
+    description="入力された候補からランダムに選出するコマンド"
+)
+async def random_command(
+    interaction: discord.Integration,
+    candidate: str
 ):
-    """Runlet command"""
+    await RandomCommand.command(
+        tree,
+        interaction,
+        candidate,
+    )
 
-    try:
-        print("playW command")
-        candidate = []
-
-        # コマンドで受け取った候補を配列に格納する
-        for temp in args:
-            candidate.append(temp)
-
-        print(candidate)
-
-        # 候補配列からランダムに1つ選び、メッセージを送信する
-        await ctx.send(
-            f'{candidate[random.randint(0, len(candidate))]}'
-        )
-
-    except:
-        await ctx.send("error occurred")
-        return
 
 keep_alive()
-bot.run(TOKEN)
+client.run(TOKEN)
