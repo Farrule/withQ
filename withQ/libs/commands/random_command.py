@@ -14,7 +14,7 @@ async def command(tree, interaction: discord.Interaction, candidate: str):
         return
 
     except Exception as e:
-        await interaction.response.send_message("コマンドの実行に失敗しました")
+        await interaction.response.send_message("コマンドの実行に失敗しました", ephemeral=True)
         logging.basicConfig(
             format='%(asctime)s %(message)s', level=logging.INFO)
         logging.error(f'Error: {e}')
