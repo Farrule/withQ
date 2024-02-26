@@ -6,6 +6,7 @@ from discord import app_commands
 from dotenv import load_dotenv
 
 import withQ.libs.commands.help_command as HelpCommand
+import withQ.libs.commands.nice_command as NiceCommand
 import withQ.libs.commands.random_command as RandomCommand
 import withQ.libs.commands.update_command as UpdateCommand
 import withQ.libs.commands.withQ_command as WithQCommand
@@ -134,6 +135,20 @@ async def random_command(
         tree,
         interaction,
         candidate,
+    )
+
+
+# /nice コマンド送信者のボイスチャットに参加してnice madを再生する
+@tree.command(
+    name="nice",
+    description="NICE!"
+)
+async def nice_command(
+    interaction: discord.Integration,
+):
+    await NiceCommand.command(
+        tree,
+        interaction,
     )
 
 
