@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import discord
@@ -18,17 +19,22 @@ async def command(tree, interaction: discord.Interaction):
         # 音声ファイルのパス
         audio_file = "./withQ/assets/nice.mp3"
 
+        async def on_end():
+            voice_client.stop()
+            await voice_client.disconnect()
+
         # 音声ファイルを読み込み
-        player = voice_client.play(discord.FFmpegPCMAudio(audio_file))
+        voice_client.play(discord.FFmpegPCMAudio(audio_file))
 
-        print("aaa")
+        await interaction.response.send_message(
+            content="NICE!", ephemeral=True)
 
-        # 再生完了時にメッセージを送信
-        def on_end():
-            player.stop()
-            voice_client.disconnect()
+        # 再生完了を待つ
+        while voice_client.is_playing():
+            await asyncio.sleep(1)
 
-        player.on_end(on_end)
+        # 再生完了処理
+        await on_end()
 
         return
 
