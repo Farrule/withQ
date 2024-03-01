@@ -6,6 +6,7 @@ from discord import app_commands
 from dotenv import load_dotenv
 
 import withQ.libs.commands.help_command as HelpCommand
+import withQ.libs.commands.kuki_command as KukiCommand
 import withQ.libs.commands.nice_command as NiceCommand
 import withQ.libs.commands.random_command as RandomCommand
 import withQ.libs.commands.update_command as UpdateCommand
@@ -89,6 +90,20 @@ async def help_command(interaction: discord.Interaction):
 
 
 # /withQ 募集を実施するコマンド
+@app_commands.describe(
+    title="募集内容を入力してください",
+    recruitment_num="募集人数を入力してください",
+    deadline_time="締め切り時間を入力してください exp) 21:00",
+    mention_target="メンション対象を選択してください",
+    feedback="募集に参加者または参加辞退者が出た場合に通知を設定します"
+)
+@app_commands.rename(
+    title="募集内容",
+    recruitment_num="募集人数",
+    deadline_time="締め切り時間",
+    mention_target="メンション対象",
+    feedback="通知設定"
+)
 @app_commands.choices(
     mention_target=[
         discord.app_commands.Choice(name="everyone", value="@everyone"),
@@ -147,6 +162,20 @@ async def nice_command(
     interaction: discord.Integration,
 ):
     await NiceCommand.command(
+        tree,
+        interaction,
+    )
+
+
+# /kuki コマンド送信者のボイスチャットに参加して空気清浄機の音を再生する
+@tree.command(
+    name="kuki",
+    description="ヴィイイイイイイイイイイイ"
+)
+async def kuki_command(
+    interaction: discord.Integration,
+):
+    await KukiCommand.command(
         tree,
         interaction,
     )
