@@ -6,6 +6,7 @@ from discord import app_commands
 from dotenv import load_dotenv
 
 import withQ.libs.commands.help_command as HelpCommand
+import withQ.libs.commands.kuki_command as KukiCommand
 import withQ.libs.commands.nice_command as NiceCommand
 import withQ.libs.commands.random_command as RandomCommand
 import withQ.libs.commands.update_command as UpdateCommand
@@ -147,6 +148,20 @@ async def nice_command(
     interaction: discord.Integration,
 ):
     await NiceCommand.command(
+        tree,
+        interaction,
+    )
+
+
+# /kuki コマンド送信者のボイスチャットに参加して空気清浄機の音を再生する
+@tree.command(
+    name="kuki",
+    description="ヴィイイイイイイイイイイイ"
+)
+async def kuki_command(
+    interaction: discord.Integration,
+):
+    await KukiCommand.command(
         tree,
         interaction,
     )
