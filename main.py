@@ -90,6 +90,20 @@ async def help_command(interaction: discord.Interaction):
 
 
 # /withQ 募集を実施するコマンド
+@app_commands.describe(
+    title="募集内容を入力してください",
+    recruitment_num="募集人数を入力してください",
+    deadline_time="締め切り時間を入力してください exp) 21:00",
+    mention_target="メンション対象を選択してください",
+    feedback="募集に参加者または参加辞退者が出た場合に通知を設定します"
+)
+@app_commands.rename(
+    title="募集内容",
+    recruitment_num="募集人数",
+    deadline_time="締め切り時間",
+    mention_target="メンション対象",
+    feedback="通知設定"
+)
 @app_commands.choices(
     mention_target=[
         discord.app_commands.Choice(name="everyone", value="@everyone"),
