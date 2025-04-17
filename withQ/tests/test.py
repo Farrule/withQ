@@ -52,7 +52,5 @@ def deadline_time(deadline_time: str, now_datetime: datetime.datetime) -> tuple[
         return 0.0, deadline_time, False
 
     except Exception as e:
-        logging.basicConfig(
-            format='%(asctime)s %(message)s', level=logging.INFO)
         logging.error(f'Error: {e}')
         return 0.0, deadline_time, False

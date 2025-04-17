@@ -33,6 +33,8 @@ async def command(tree, interaction: discord.Interaction):
         while voice_client.is_playing():
             await asyncio.sleep(1)
 
+        logging.info("nice_command: seccess")
+
         # 再生完了処理
         await on_end()
 
@@ -40,7 +42,5 @@ async def command(tree, interaction: discord.Interaction):
 
     except Exception as e:
         await interaction.response.send_message(content="コマンドの実行に失敗しました", ephemeral=True)
-        logging.basicConfig(
-            format='%(asctime)s %(message)s', level=logging.INFO)
         logging.error(f'Error: {e}')
         return

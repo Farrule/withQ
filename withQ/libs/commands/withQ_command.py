@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import logging
+import pytz
 
 import discord
 from discord.interactions import Interaction
@@ -12,7 +13,7 @@ import withQ.libs.constants.const as c
 
 async def command(tree, interaction: discord.Interaction, title, recruitment_num, deadline_time, mention_target, feedback, env_c):
     try:
-        now_datetime = datetime.datetime.now() + datetime.timedelta(hours=9)
+        now_datetime = datetime.datetime.now()
         # key: 参加者ユーザーネーム value:メンションID 初期値として募集者を代入
         in_queue_member_dict = {
             interaction.user.global_name: interaction.user.mention
@@ -20,8 +21,9 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
         recruiter = interaction.user
         is_deadline = False
 
+
         # 募集人数が1人以上でない場合、returnする
-        if recruitment_num <= 1:
+        if recruitment_num <= 0:
             await interaction.response.send_message(content='募集人数の数値が正しくありません', ephemeral=True)
             return
 
@@ -39,10 +41,14 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
             total_seconds = env_c.AUTO_DEADLINE
             is_deadline = True
 
+        # ログ出力
+        #print(f"withQ_command: title: {title}, recruitment_num: {recruitment_num}, now_datetime: {now_datetime}, deadline_time: {deadline_time}, mention_target: {mention_target}, feedback: {feedback}")
+        logging.info(f"withQ_command: title: {title}, recruitment_num: {recruitment_num}, now_datetime: {now_datetime}, deadline_time: {deadline_time}, total_seconds: {total_seconds}, is_deadline: {is_deadline}, mention_target: {mention_target}, feedback: {feedback}")
+
         # 募集メッセージを作成、送信する
         try:
             await interaction.response.send_message(
-                content=f'{mention_target}\n{title}  @{recruitment_num} {deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+                content=f'{mention_target}\n{title}  @{recruitment_num} {"締切時間:" + deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
                 view=row_view.RowView(
                     title,
                     recruitment_num,
@@ -56,8 +62,6 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
             )
         except Exception as e:
             await interaction.response.send_message("コマンドの実行に失敗しました")
-            logging.basicConfig(
-                format='%(asctime)s %(message)s', level=logging.INFO)
             logging.error(f'Error: {e}')
             return
 
@@ -85,7 +89,5 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
 
     except Exception as e:
         await interaction.response.send_message(content="コマンドの実行に失敗しました", ephemeral=True)
-        logging.basicConfig(
-            format='%(asctime)s %(message)s', level=logging.INFO)
         logging.error(f'Error: {e}')
         return

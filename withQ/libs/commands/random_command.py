@@ -11,11 +11,12 @@ async def command(tree, interaction: discord.Interaction, candidate: str):
         await interaction.response.send_message(
             f'{candidate_lint[random.randint(0, len(candidate_lint))]} が選ばれました！'
         )
+
+        logging.info("random_command: seccess")
+
         return
 
     except Exception as e:
         await interaction.response.send_message("コマンドの実行に失敗しました", ephemeral=True)
-        logging.basicConfig(
-            format='%(asctime)s %(message)s', level=logging.INFO)
         logging.error(f'Error: {e}')
         return

@@ -1,4 +1,5 @@
 import os
+import logging
 from os.path import dirname, join
 
 import discord
@@ -20,6 +21,7 @@ parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 env_file_path = os.path.join(parent_dir, ".env")
 load_dotenv(env_file_path)
 
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 # .envファイルのEXECUTION_ENVパラメータで実行環境とbotの切り替えを行う
 if os.getenv("EXECUTION_ENV") == "DEBUG":

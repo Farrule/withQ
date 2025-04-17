@@ -22,6 +22,8 @@ docker cp ./.env withQ_project:/root/.env
 ```bash
 #!/~
 docker compose up -d --build
+#or
+docoker build ./ -t withq
 ```
 
 ## コンテナのターミナルへ接続する
@@ -29,6 +31,8 @@ docker compose up -d --build
 ```bash
 #!/~
 docker compose exec python3 bash
+#or
+docker run --name withq -it withq
 ```
 
 ## コードの実行

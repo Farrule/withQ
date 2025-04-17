@@ -11,11 +11,9 @@ async def command(tree, interaction: discord.Interaction):
             embed=embed.embed,
             ephemeral=True
         )
+        logging.info("help_command: seccess")
         return
     except Exception as e:
         await interaction.response.send_message("コマンドの実行に失敗しました", ephemeral=True)
-        print(e)
-        logging.basicConfig(
-            format='%(asctime)s %(message)s', level=logging.INFO)
         logging.error(f'Error: {e}')
         return
