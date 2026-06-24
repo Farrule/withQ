@@ -1,23 +1,25 @@
-FROM python:3.10.5
+FROM python:3.10-slim
 USER root
 
 WORKDIR /src
 
-RUN apt-get update
-RUN apt-get -y install locales && localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
-RUN apt-get update && apt-get install -y ffmpeg
+# 日本語環境の設定と、必要最小限のパッケージ
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales \
+    && localedef -f UTF-8 -i ja_JP ja_JP.UTF-8 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV LANG=ja_JP.UTF-8
 ENV LANGUAGE=ja_JP:ja_JP
 ENV LC_ALL=ja_JP.UTF-8
-ENV TZ=JST-9
+ENV TZ=Asia/Tokyo
 ENV TERM=xterm
 
-RUN pip install --upgrade pip
-RUN pip install --upgrade setuptools
+RUN pip install --no-cache-dir --upgrade pip setuptools
 
 COPY . /src
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "main.py"]

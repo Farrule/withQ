@@ -1,6 +1,6 @@
-import discord
-from discord.interactions import Interaction
-from discord.ui import Button
+import discord # type: ignore
+from discord.interactions import Interaction # type: ignore
+from discord.ui import Button # type: ignore
 
 
 class CancelButton(Button):
@@ -20,6 +20,9 @@ class CancelButton(Button):
 
             if self.is_deadline:
                 self.in_queue_member_dict["is_deadline_param"] = "False"
+
+            if self.view is not None:
+                self.view.stop()
 
             await interaction.response.edit_message(content=f'{mentions}\n{self.title}\n上記の募集は取り消されました。', view=None)
             return

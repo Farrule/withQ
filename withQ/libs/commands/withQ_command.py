@@ -1,10 +1,10 @@
 import asyncio
 import datetime
 import logging
-import pytz
+import pytz # type: ignore
 
-import discord
-from discord.interactions import Interaction
+import discord # type: ignore
+from discord.interactions import Interaction # type: ignore
 
 import withQ.libs.components.deadline_time as dt
 import withQ.libs.components.row_view as row_view
@@ -46,19 +46,20 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
         logging.info(f"withQ_command: title: {title}, recruitment_num: {recruitment_num}, now_datetime: {now_datetime}, deadline_time: {deadline_time}, total_seconds: {total_seconds}, is_deadline: {is_deadline}, mention_target: {mention_target}, feedback: {feedback}")
 
         # 募集メッセージを作成、送信する
+        view = row_view.RowView(
+            title,
+            recruitment_num,
+            in_queue_member_dict,
+            recruiter,
+            mention_target,
+            feedback,
+            deadline_time,
+            is_deadline,
+        )
         try:
             await interaction.response.send_message(
                 content=f'{mention_target}\n{title}  @{recruitment_num} {"締切時間:" + deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
-                view=row_view.RowView(
-                    title,
-                    recruitment_num,
-                    in_queue_member_dict,
-                    recruiter,
-                    mention_target,
-                    feedback,
-                    deadline_time,
-                    is_deadline,
-                )
+                view=view
             )
         except Exception as e:
             await interaction.response.send_message("コマンドの実行に失敗しました")
@@ -67,8 +68,15 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
 
         # 締め切り処理
         if total_seconds > 0:
-            await asyncio.sleep(total_seconds)
-            if "False" != in_queue_member_dict[next(iter(reversed(in_queue_member_dict)))]:
+            elapsed = 0
+            while elapsed < total_seconds:
+                if view.is_finished():
+                    return
+                await asyncio.sleep(1)
+                elapsed += 1
+
+            if not view.is_finished():
+                view.stop()
                 # 募集に参加した人がいなかった場合
                 if len(in_queue_member_dict) <= 1:
                     await interaction.edit_original_response(

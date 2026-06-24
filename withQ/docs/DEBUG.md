@@ -1,53 +1,138 @@
-# デバッグ実行について
+# 開発環境（Mac）でのデバッグ実行手順書
 
-## .envファイルの追加とTOKENの設定
+本手順書は、開発PC（Mac）で Docker を使用して本 Discord ボット（withQ）をデバッグ起動し、開発・検証を行うための手順を説明します。
 
-.envファイルをsrcファイル直下に配置する
-.envファイルに以下の記述を追加し、保存する
+---
+
+## 前提条件
+
+- **Docker Desktop for Mac** がインストールされ、起動していること。
+- デバッグ用の **Discord Bot** が作成されており、Bot のトークンが取得できていること。
+
+---
+
+## 1. 環境変数の設定（.env ファイルの準備）
+
+プロジェクトのルートディレクトリ直下に存在する `.env` ファイルを設定します。
+
+1. プロジェクトのルート直下にある `.env` ファイルを開きます。（存在しない場合は新規作成してください）
+2. 開発環境（デバッグモード）で動作させるため、以下のように設定します。
 
 ```text
-#!/.env
-TOKEN={discord bot token}
+# 実行環境をDEBUGに設定
+EXECUTION_ENV=DEBUG
+
+# デバッグ用のDiscord Botトークンを設定
+DEVELOPMENT_TOKEN=【あなたのデバッグ用Botトークン】
+
+# (参考) 本番用トークン（本番環境用。デバッグ時は不要ですが、切り替えて動作確認したい場合に利用します）
+PRODUCTION_TOKEN=【本番用Botトークン】
 ```
 
-## ローカルの.envファイルをdocker内の.envファイルと同期させる
+> **注意:**
+>
+> - `.env` ファイルは Git 管理から除外（`.gitignore` に登録）されているため、個人のトークンをコミットしてしまう心配はありません。
+> - `main.py` 内で、`EXECUTION_ENV` の値が `DEBUG` のときは `DEVELOPMENT_TOKEN` が、`PRODUCTION` のときは `PRODUCTION_TOKEN` が自動的に読み込まれる仕様になっています。
+
+---
+
+## 2. Docker コンテナのビルドと起動
+
+ターミナルを開き、プロジェクトのルートディレクトリに移動して以下のコマンドを実行します。
 
 ```bash
-#!/.env
-docker cp ./.env withQ_project:/root/.env
-```
-
-## docker build
-
-```bash
-#!/~
+# コンテナのビルドおよびバックグラウンドでの起動
 docker compose up -d --build
-#or
-docoker build ./ -t withq
 ```
 
-## コンテナのターミナルへ接続する
+- `-d` オプションにより、コンテナはバックグラウンドで常時起動します。
+- `--build` を付与することで、依存パッケージ（`requirements.txt` の内容など）に変更があった場合でも最新の状態にビルドし直されます。
+
+---
+
+## 3. ログの確認方法（デバッグ時）
+
+ボットが正常にログインできたか、エラーが発生していないかなどを確認するために、コンテナのログをリアルタイムで監視します。
 
 ```bash
-#!/~
-docker compose exec python3 bash
-#or
-docker run --name withq -it withq
+# リアルタイムでコンテナのログを出力する
+docker compose logs -f app
 ```
 
-## コードの実行
+- `Logged in as withQ...` や `Update success!` といった出力が表示されれば、Discord サーバーとの接続に成功しています。
+- ログ監視を終了するには `Ctrl + C` を押します。
 
-※dockerのコンテナ内のbashで実行
+---
+
+## 4. コード変更の反映（ホットリロード・再起動）
+
+本プロジェクトの `docker-compose.yml` では、ローカルのディレクトリをコンテナ内の `/src` に同期（ボリュームマウント）するよう設定されています。
+
+```yaml
+volumes:
+  - .:/src
+```
+
+そのため、**Mac（ローカル）側でコードを書き換えると、コンテナ内へ即座に反映**されます。
+ただし、ボットを再起動してコードの変更を反映させる必要がある場合は、以下のコマンドでコンテナ（サービス名：`app`）を再起動してください。
 
 ```bash
-#!~/withQ
+# ボットのプログラムを再起動
+docker compose restart app
+```
+
+再起動後、再度 `docker compose logs -f app` で動作を確認してください。
+
+---
+
+## 5. コンテナ内のターミナルへの接続（シェル操作）
+
+コンテナ内で個別にスクリプトを実行したり、手動で動作を確認したい場合は、起動中のコンテナのシェルに接続することができます。
+
+```bash
+# コンテナ内の bash に接続
+docker compose exec app bash
+```
+
+接続後、コンテナ内のカレントディレクトリ `/src` で直接 Python スクリプトを実行できます。
+
+```bash
+# コンテナ内での手動実行例
 python main.py
 ```
 
-## 本番環境用リポジトリとの同期
+コンテナ内のシェルを抜けるには、`exit` と入力します。
+
+---
+
+## 6. 開発の終了（コンテナの停止）
+
+デバッグ作業や開発が終了したら、バックグラウンドで動いているコンテナを停止・削除します。
 
 ```bash
-#!~ withQ/master
-git fetch upstream
-git merge --allow-unrelated-histories upstream/master
+# コンテナの停止と削除
+docker compose down
 ```
+
+このコマンドを実行すると、コンテナやネットワークが綺麗にクリーンアップされます。
+
+---
+
+## 7. トラブルシューティング & 開発時の注意点
+
+### 7.1 `TypeError: 'bool' object is not callable` が発生する
+
+- **状況**: `withq` コマンド実行時や、ボタンインタラクション時に `TypeError: 'bool' object is not callable` がログに出力され、ボットのレスポンスが正常に返りません。
+- **原因**: 独自の `View` クラス（`RowView`など）の中で、親クラス `discord.ui.View` が持つ組み込みメソッドと同じ名前のインスタンス変数 `self.is_finished` を再定義（オーバーライド）しているためです。これにより、Discord.py 内部で `view.is_finished()` を評価する際に、関数ではなく `bool` 型変数をコールしようとして例外が発生します。
+- **解決策**:
+  - ビュークラスの内部で `self.is_finished = False` などのメンバ変数を定義せず、既存の終了判定メソッド `view.is_finished()` を利用してください。
+  - ビューをプログラムから終了させたいときは、フラグの書き換えではなく `view.stop()` を呼び出します。これにより、ライブラリ内部でビューが正常に停止され、`view.is_finished()` が `True` を返すようになります。
+- **コード例（不適切な例と修正後）**:
+
+  ```python
+  # ❌ 誤った書き方（メソッドの変数は上書きしない）
+  self.view.is_finished = True
+
+  # ⭕ 正しい書き方
+  self.view.stop()
+  ```

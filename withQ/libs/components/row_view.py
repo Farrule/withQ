@@ -1,5 +1,5 @@
-import discord
-from discord.ui import View
+import discord # type: ignore
+from discord.ui import View # type: ignore
 
 import withQ.libs.components.cancel_button as cancel_button
 import withQ.libs.components.closing_q_button as closing_button

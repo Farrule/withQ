@@ -1,6 +1,6 @@
-import discord
-from discord.interactions import Interaction
-from discord.ui import Button
+import discord # type: ignore
+from discord.interactions import Interaction # type: ignore
+from discord.ui import Button # type: ignore
 
 
 class ClosingQButton(Button):
@@ -20,6 +20,10 @@ class ClosingQButton(Button):
                 mentions += mention + ' '
             if self.is_deadline:
                 self.in_queue_member_dict["is_deadline_param"] = "False"
+
+            if self.view is not None:
+                self.view.stop()
+
             await interaction.response.edit_message(
                 content=f'{mentions}\n{self.title} {self.deadline_time if self.deadline_time != None else ""}\n上記の募集を締め切りました。',
                 view=None,

@@ -6,39 +6,41 @@ import withQ.libs.constants.const as c
 import withQ.libs.constants.regex as regex
 
 
-def deadline_time(deadline_time: str, now_datetime: datetime.datetime) -> tuple[float, str, bool]:
+def deadline_time(deadline_time_str: str, now_datetime: datetime.datetime) -> tuple[float, str, bool]:
     try:
         # 締め切り時間形式の妥当性をチェック
-        if not re.match(regex.DATETIME_TYPE, deadline_time):
-            return 0.0, deadline_time, False
+        if not re.match(regex.DATETIME_TYPE, deadline_time_str):
+            return 0.0, deadline_time_str, False
+
+        time_in_datetime = None
 
         # 一致したフォーマットに基づいて時間要素を抽出
-        if re.match(regex.TIME, deadline_time):
-            time_in_seconds = datetime.datetime(
+        if re.match(regex.TIME, deadline_time_str):
+            time_parts = deadline_time_str.split(":")
+            time_in_datetime = datetime.datetime(
                 now_datetime.year, now_datetime.month, now_datetime.day,
-                int(deadline_time.split(":")[0]), int(
-                    deadline_time.split(":")[1])
+                int(time_parts[0]), int(time_parts[1])
             )
-            time_in_datetime = time_in_seconds
-        elif re.match(regex.DATETIME, deadline_time):
+        elif re.match(regex.DATETIME, deadline_time_str):
             time_in_datetime = datetime.datetime.strptime(
-                deadline_time, "%Y-%m-%d %H:%M")
-        else:  # regex.YEARDATETIME
+                deadline_time_str, "%m/%d/%H:%M")
+            # 年がない場合は現在の年を補完
+            time_in_datetime = time_in_datetime.replace(year=now_datetime.year)
+        elif re.match(regex.YEARDATETIME, deadline_time_str):
             time_in_datetime = datetime.datetime.strptime(
-                deadline_time, "%Y/%m/%d %H:%M")
+                deadline_time_str, "%Y/%m/%d/%H:%M")
+
+        if time_in_datetime is None:
+            return 0.0, deadline_time_str, False
 
         # 締め切りステータスと残り秒数を計算
-        if time_in_seconds >= now_datetime or time_in_datetime >= now_datetime:
-            # deadline_time = f"{c.DEADLINE_TEXT}: {deadline_time}"
-            time_delta = (time_in_seconds if re.match(
-                regex.TIME, deadline_time) else time_in_datetime) - now_datetime
+        if time_in_datetime >= now_datetime:
+            time_delta = time_in_datetime - now_datetime
             total_seconds = time_delta.total_seconds()
-            is_deadline = True
+            return total_seconds, deadline_time_str, True
 
-            return total_seconds, deadline_time, is_deadline
-
-        return 0.0, deadline_time, False
+        return 0.0, deadline_time_str, False
 
     except Exception as e:
         logging.error(f'Error: {e}')
-        return 0.0, deadline_time, False
+        return 0.0, deadline_time_str, False
