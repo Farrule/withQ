@@ -7,8 +7,6 @@ from discord import app_commands
 from dotenv import load_dotenv
 
 import withQ.libs.commands.help_command as HelpCommand
-import withQ.libs.commands.kuki_command as KukiCommand
-import withQ.libs.commands.nice_command as NiceCommand
 import withQ.libs.commands.random_command as RandomCommand
 import withQ.libs.commands.update_command as UpdateCommand
 import withQ.libs.commands.withQ_command as WithQCommand
@@ -38,7 +36,7 @@ else:
     print('Can`t Start This Service')
 
 # bot初期化
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
 client = discord.Client(command_prefix='/', intents=intents)
 tree = app_commands.CommandTree(client)
@@ -145,7 +143,7 @@ async def withQ_command(
     description="入力された候補からランダムに選出するコマンド"
 )
 async def random_command(
-    interaction: discord.Integration,
+    interaction: discord.Interaction,
     candidate: str
 ):
     await RandomCommand.command(
@@ -153,35 +151,6 @@ async def random_command(
         interaction,
         candidate,
     )
-
-
-# /nice コマンド送信者のボイスチャットに参加してnice madを再生する
-@tree.command(
-    name="nice",
-    description="NICE!"
-)
-async def nice_command(
-    interaction: discord.Integration,
-):
-    await NiceCommand.command(
-        tree,
-        interaction,
-    )
-
-
-# /kuki コマンド送信者のボイスチャットに参加して空気清浄機の音を再生する
-@tree.command(
-    name="kuki",
-    description="ヴィイイイイイイイイイイイ"
-)
-async def kuki_command(
-    interaction: discord.Integration,
-):
-    await KukiCommand.command(
-        tree,
-        interaction,
-    )
-
 
 keep_alive()
 client.run(TOKEN)
