@@ -33,6 +33,8 @@ class InQButton(Button):
                 mentions = ""
                 for mention in self.in_queue_member_dict.values():
                     mentions += mention + ' '
+                if self.view is not None:
+                    self.view.is_finished = True
                 await interaction.response.edit_message(
                     content=f'{mentions}\n{self.title}\n上記の募集が完了しました。',
                     view=None,

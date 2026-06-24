@@ -10,7 +10,6 @@ import withQ.libs.commands.help_command as HelpCommand
 import withQ.libs.commands.random_command as RandomCommand
 import withQ.libs.commands.update_command as UpdateCommand
 import withQ.libs.commands.withQ_command as WithQCommand
-from withQ.config.keep_alive import keep_alive
 
 # .envファイルを取得する
 load_dotenv(verbose=True)
@@ -152,5 +151,4 @@ async def random_command(
         candidate,
     )
 
-keep_alive()
 client.run(TOKEN)
