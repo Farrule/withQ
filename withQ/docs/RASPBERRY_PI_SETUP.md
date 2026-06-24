@@ -120,7 +120,7 @@ logging:
 
 ```bash
 cd ~/withQ
-git pull origin main
+git pull origin master
 docker compose up -d --build
 ```
 
