@@ -1,6 +1,6 @@
-import discord
-from discord.interactions import Interaction
-from discord.ui import Button
+import discord # type: ignore
+from discord.interactions import Interaction # type: ignore
+from discord.ui import Button # type: ignore
 
 
 class CancelButton(Button):

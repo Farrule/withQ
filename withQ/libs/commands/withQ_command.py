@@ -1,10 +1,10 @@
 import asyncio
 import datetime
 import logging
-import pytz
+import pytz # type: ignore
 
-import discord
-from discord.interactions import Interaction
+import discord # type: ignore
+from discord.interactions import Interaction # type: ignore
 
 import withQ.libs.components.deadline_time as dt
 import withQ.libs.components.row_view as row_view
