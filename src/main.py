@@ -1,44 +1,35 @@
 import os
 import logging
 from os.path import dirname, join
+import datetime
+import asyncio
 
 import discord
 from discord import app_commands
-from dotenv import load_dotenv
 
 import commands.help_command as HelpCommand
 import commands.random_command as RandomCommand
 import commands.update_command as UpdateCommand
 import commands.withQ_command as WithQCommand
 
-# .envファイルを取得する
-load_dotenv(verbose=True)
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
-env_file_path = os.path.join(parent_dir, ".env")
-load_dotenv(env_file_path)
+import components.row_view as row_view
+
+import database.db as db
+
+from config.settings import env_c, TOKEN
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-# .envファイルのEXECUTION_ENVパラメータで実行環境とbotの切り替えを行う
-if os.getenv("EXECUTION_ENV") == "DEBUG":
-    TOKEN = os.getenv("DEVELOPMENT_TOKEN")
-    print(f'USE DEVELOPMENT TOKEN:{TOKEN}')
-    import config.development_const as env_c
-
-elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
-    TOKEN = os.environ.get("PRODUCTION_TOKEN")
-    print(f'USE PRODUCTION TOKEN:{TOKEN}')
-    import config.production_const as env_c
-
+if env_c.DEBUG_MODE:
+    logging.info('Service Status: DEBUG')
 else:
-    print('Can`t Start This Service')
+    logging.info('Service Status: PRODUCTION')
 
 # bot初期化
 intents = discord.Intents.all()
 intents.message_content = True
 allowed = discord.AllowedMentions.all()
-client = discord.Client(command_prefix='/', intents=intents, allowed_mentions=allowed)
+client = discord.Client(intents=intents, allowed_mentions=allowed)
 tree = app_commands.CommandTree(client)
 
 
@@ -46,25 +37,20 @@ tree = app_commands.CommandTree(client)
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.CustomActivity(name="In Q with your friends!"))
-    print(f"Logged in as {client.user} (ID: {client.user.id})")
+    logging.info(f"Logged in as {client.user} (ID: {client.user.id})")
 
     # コマンドツリーの同期
     try:
         await tree.sync()
-        print("Update success!")
+        logging.info("Update success!")
     except Exception as e:
-        print("Update failure!")
-        print(e)
+        logging.info("Update failure!")
+        logging.error(e)
 
     # データベースの初期化とアクティブセッションの復元
-    import backend.db as db
-    import components.row_view as row_view
-    import datetime
-    import asyncio
-
     db.init_db()
     active_sessions = db.get_active_sessions()
-    print(f"Restoring {len(active_sessions)} active sessions...")
+    logging.info(f"Restoring {len(active_sessions)} active sessions...")
     for session in active_sessions:
         try:
             recruiter = client.get_user(session["recruiter_id"])
@@ -106,11 +92,11 @@ async def on_ready():
                     channel_id=session["channel_id"],
                     message_id=session["message_id"]
                 ))
-            print(f"Restored session: {session['session_id']}")
+            logging.info(f"Restored session: {session['session_id']}")
         except Exception as e:
-            print(f"Failed to restore session {session.get('session_id')}: {e}")
+            logging.info(f"Failed to restore session {session.get('session_id')}: {e}")
 
-    print("------")
+    logging.info("------")
 
 
 # botがサーバーに参加した時にコマンドを同期する
@@ -206,4 +192,12 @@ async def random_command(
         candidate,
     )
 
-client.run(TOKEN, log_handler=None)
+if __name__ == "__main__":
+    if not TOKEN:
+        logging.error("==================================================")
+        logging.error("❌ CRITICAL ERROR: DiscordのTOKENが設定されていません!")
+        logging.error("EXECUTION_ENV の値や、環境変数の設定を確認してください。")
+        logging.error("==================================================")
+    else:
+        # TOKENが存在するときだけ実行
+        client.run(TOKEN, log_handler=None)

@@ -2,7 +2,7 @@ import discord # type: ignore
 import logging
 from discord.interactions import Interaction # type: ignore
 from discord.ui import Button # type: ignore
-import backend.db as db
+import database.db as db
 
 
 class CancelButton(Button):

@@ -9,10 +9,8 @@ from discord.interactions import Interaction # type: ignore
 
 import components.deadline_time as dt
 import components.row_view as row_view
-import constants.const as c
 
-
-import backend.db as db
+import database.db as db
 
 async def monitor_deadline(client, session_id, view, total_seconds, title, deadline_time, in_queue_member_dict, channel_id, message_id):
     try:
@@ -49,7 +47,7 @@ async def monitor_deadline(client, session_id, view, total_seconds, title, deadl
                 for mention in in_queue_member_dict.values():
                     mentions += mention + ' '
                 await message.edit(
-                    content=f'{mentions}\n{title}  {deadline_time if deadline_time is not None else ""}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
+                    content=f'{mentions}\n{title}  {deadline_time if deadline_time is not None else ""}\n締切時間になりましたので上記の募集を締め切りました。',
                     view=None,
                 )
                 members = [k for k in in_queue_member_dict.keys() if k != "is_deadline_param"]
@@ -95,7 +93,6 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
                 deadline_time = auto_deadline_datetime.strftime("%m/%d/%H:%M")
 
         # ログ出力
-        #print(f"withQ_command: title: {title}, recruitment_num: {recruitment_num}, now_datetime: {now_datetime}, deadline_time: {deadline_time}, mention_target: {mention_target}, feedback: {feedback}")
         logging.info(f"[withQ-{session_id}] 募集を開始しました。 募集者: {recruiter.global_name}, タイトル: {title}, 募集人数: {recruitment_num}, 締め切り時間: {deadline_time if deadline_time != None else 'AUTO_DEADLINE'}")
 
         # 募集メッセージを作成、送信する
