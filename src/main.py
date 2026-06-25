@@ -21,8 +21,10 @@ from config.settings import env_c, TOKEN
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 if env_c.DEBUG_MODE:
+    logging.info("------")
     logging.info('Service Status: DEBUG')
 else:
+    logging.info("------")
     logging.info('Service Status: PRODUCTION')
 
 # bot初期化
@@ -42,9 +44,9 @@ async def on_ready():
     # コマンドツリーの同期
     try:
         await tree.sync()
-        logging.info("Update success!")
+        logging.info("Command tree update success!")
     except Exception as e:
-        logging.info("Update failure!")
+        logging.info("Command tree update failure!")
         logging.error(e)
 
     # データベースの初期化とアクティブセッションの復元

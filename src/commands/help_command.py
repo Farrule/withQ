@@ -2,13 +2,13 @@ import logging
 
 import discord
 
-import constants.embed as embed
+import components.help_embed as help_embed
 
 
 async def command(tree, interaction: discord.Interaction):
     try:
         await interaction.response.send_message(
-            embed=embed.embed,
+            embed=help_embed.embed,
             ephemeral=True
         )
         logging.info("help_command: success")
