@@ -7,3 +7,6 @@ src/libs/tests/__pycache__
 TODO.md
 TOKEN.md
 SERVER.md
+
+# Data directory for database
+data/

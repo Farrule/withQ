@@ -2,11 +2,12 @@ import discord # type: ignore
 import logging
 from discord.interactions import Interaction # type: ignore
 from discord.ui import Button # type: ignore
+import withQ.backend.db as db
 
 
 class ClosingQButton(Button):
     def __init__(self, title: str, recruitment_num: int, in_queue_member_dict: dict, deadline_time: str, is_deadline: bool, session_id: str):
-        super().__init__(label="〆", style=discord.ButtonStyle.green)
+        super().__init__(label="〆", style=discord.ButtonStyle.green, custom_id=f"closing:{session_id}")
         self.title = title
         self.recruitment_num = recruitment_num
         self.in_queue_member_dict = in_queue_member_dict
@@ -26,8 +27,12 @@ class ClosingQButton(Button):
             if self.view is not None:
                 self.view.stop()
 
+            db.delete_session(self.session_id)
+
+            deadline_text = f"\n締切時間:{self.deadline_time}" if (self.is_deadline and self.deadline_time is not None) else ""
+
             await interaction.response.edit_message(
-                content=f'{mentions}\n{self.title} {self.deadline_time if self.deadline_time != None else ""}\n上記の募集を締め切りました。',
+                content=f'{mentions}\n{self.title} {deadline_text}\n上記の募集を締め切りました。',
                 view=None,
             )
             members = [k for k in self.in_queue_member_dict.keys() if k != "is_deadline_param"]

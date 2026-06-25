@@ -2,6 +2,7 @@ import discord
 import logging
 from discord.interactions import Interaction
 from discord.ui import Button
+import withQ.backend.db as db
 
 
 class DeQButton(Button):
@@ -14,9 +15,10 @@ class DeQButton(Button):
         mention_target: str,
         is_feedback_on_recruitment: bool,
         deadline_time: str,
+        is_deadline: bool,
         session_id: str
     ):
-        super().__init__(label="DE Q", style=discord.ButtonStyle.red)
+        super().__init__(label="DE Q", style=discord.ButtonStyle.red, custom_id=f"de_q:{session_id}")
         self.title = title
         self.recruitment_num = recruitment_num
         self.in_queue_member_dict = in_queue_member_dict
@@ -24,6 +26,7 @@ class DeQButton(Button):
         self.mention_target = mention_target
         self.is_feedback_on_recruitment = is_feedback_on_recruitment
         self.deadline_time = deadline_time
+        self.is_deadline = is_deadline
         self.session_id = session_id
 
     async def callback(self, interaction: Interaction):
@@ -40,8 +43,9 @@ class DeQButton(Button):
                 if user != next(iter(self.in_queue_member_dict)):
                     users = user + ',' + users
 
-            deadline_text = f"\n締切時間:{self.deadline_time}" if self.deadline_time is not None else ""
+            deadline_text = f"\n締切時間:{self.deadline_time}" if (self.is_deadline and self.deadline_time is not None) else ""
 
+            db.update_session_members(self.session_id, self.in_queue_member_dict)
             await interaction.response.edit_message(
                 content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}{deadline_text}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
             )
@@ -49,9 +53,12 @@ class DeQButton(Button):
             members = [k for k in self.in_queue_member_dict.keys() if k != "is_deadline_param"]
             logging.info(f"[withQ-{self.session_id}] ユーザーが参加を取り消しました。 ユーザー: {interaction.user.global_name}, 現在の参加者: {members}")
             if self.is_feedback_on_recruitment:
-                await self.recruiter.send(
-                    content=f'あなたが募集している {self.title} から {interaction.user.global_name} が参加を取り消しました。',
-                )
+                try:
+                    await self.recruiter.send(
+                        content=f'あなたが募集している {self.title} から {interaction.user.global_name} が参加を取り消しました。',
+                    )
+                except Exception as e:
+                    logging.warning(f"Failed to send DM to recruiter: {e}")
             return
         # ボタン押下者が参加者ディレクトリに存在しない場合、その募集に参加していない旨を伝えるメッセージを送信する
         elif interaction.user.global_name not in self.in_queue_member_dict.keys():

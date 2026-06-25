@@ -1,10 +1,10 @@
 import discord # type: ignore
 from discord.ui import View # type: ignore
 
-import withQ.libs.components.cancel_button as cancel_button
-import withQ.libs.components.closing_q_button as closing_button
-import withQ.libs.components.de_q_button as de_q_button
-import withQ.libs.components.in_q_button as in_q_button
+import withQ.components.cancel_button as cancel_button
+import withQ.components.closing_q_button as closing_button
+import withQ.components.de_q_button as de_q_button
+import withQ.components.in_q_button as in_q_button
 
 
 class RowView(View):
@@ -22,9 +22,9 @@ class RowView(View):
     ):
         super().__init__(timeout=None)
         self.add_item(in_q_button.InQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time, session_id))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time, is_deadline, session_id))
         self.add_item(de_q_button.DeQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time, session_id))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time, is_deadline, session_id))
         self.add_item(closing_button.ClosingQButton(
             title, recruitment_num, in_queue_member_dict, deadline_time, is_deadline, session_id))
         self.add_item(cancel_button.CancelButton(

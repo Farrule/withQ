@@ -2,11 +2,12 @@ import discord # type: ignore
 import logging
 from discord.interactions import Interaction # type: ignore
 from discord.ui import Button # type: ignore
+import withQ.backend.db as db
 
 
 class CancelButton(Button):
     def __init__(self, title: str, in_queue_member_dict: dict, is_deadline: bool, session_id: str):
-        super().__init__(label="CANCEL", style=discord.ButtonStyle.grey)
+        super().__init__(label="CANCEL", style=discord.ButtonStyle.grey, custom_id=f"cancel:{session_id}")
         self.title = title
         self.in_queue_member_dict = in_queue_member_dict
         self.is_deadline = is_deadline
@@ -26,6 +27,7 @@ class CancelButton(Button):
             if self.view is not None:
                 self.view.stop()
 
+            db.delete_session(self.session_id)
             await interaction.response.edit_message(content=f'{mentions}\n{self.title}\n上記の募集は取り消されました。', view=None)
             logging.info(f"[withQ-{self.session_id}] 募集が終了しました(キャンセル)。")
             return
