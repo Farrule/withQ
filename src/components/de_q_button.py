@@ -2,7 +2,7 @@ import discord
 import logging
 from discord.interactions import Interaction
 from discord.ui import Button
-import withQ.backend.db as db
+import src.backend.db as db
 
 
 class DeQButton(Button):

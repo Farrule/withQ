@@ -1,10 +1,10 @@
 import discord # type: ignore
 from discord.ui import View # type: ignore
 
-import withQ.components.cancel_button as cancel_button
-import withQ.components.closing_q_button as closing_button
-import withQ.components.de_q_button as de_q_button
-import withQ.components.in_q_button as in_q_button
+import src.components.cancel_button as cancel_button
+import src.components.closing_q_button as closing_button
+import src.components.de_q_button as de_q_button
+import src.components.in_q_button as in_q_button
 
 
 class RowView(View):

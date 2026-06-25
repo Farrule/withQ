@@ -2,7 +2,7 @@ import discord # type: ignore
 import logging
 from discord.interactions import Interaction # type: ignore
 from discord.ui import Button # type: ignore
-import withQ.backend.db as db
+import src.backend.db as db
 
 
 class ClosingQButton(Button):
