@@ -6,10 +6,10 @@ import discord
 from discord import app_commands
 from dotenv import load_dotenv
 
-import src.commands.help_command as HelpCommand
-import src.commands.random_command as RandomCommand
-import src.commands.update_command as UpdateCommand
-import src.commands.withQ_command as WithQCommand
+import commands.help_command as HelpCommand
+import commands.random_command as RandomCommand
+import commands.update_command as UpdateCommand
+import commands.withQ_command as WithQCommand
 
 # .envファイルを取得する
 load_dotenv(verbose=True)
@@ -24,12 +24,12 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 if os.getenv("EXECUTION_ENV") == "DEBUG":
     TOKEN = os.getenv("DEVELOPMENT_TOKEN")
     print(f'USE DEVELOPMENT TOKEN:{TOKEN}')
-    import src.config.development_const as env_c
+    import config.development_const as env_c
 
 elif os.environ.get("EXECUTION_ENV") == "PRODUCTION":
     TOKEN = os.environ.get("PRODUCTION_TOKEN")
     print(f'USE PRODUCTION TOKEN:{TOKEN}')
-    import src.config.production_const as env_c
+    import config.production_const as env_c
 
 else:
     print('Can`t Start This Service')
@@ -57,8 +57,8 @@ async def on_ready():
         print(e)
 
     # データベースの初期化とアクティブセッションの復元
-    import src.backend.db as db
-    import src.components.row_view as row_view
+    import backend.db as db
+    import components.row_view as row_view
     import datetime
     import asyncio
 

@@ -11,3 +11,4 @@ SERVER.md
 
 # Data directory for database
 data/*
+!data/.gitkeep

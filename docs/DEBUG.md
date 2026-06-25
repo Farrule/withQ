@@ -115,24 +115,3 @@ docker compose down
 ```
 
 このコマンドを実行すると、コンテナやネットワークが綺麗にクリーンアップされます。
-
----
-
-## 7. トラブルシューティング & 開発時の注意点
-
-### 7.1 `TypeError: 'bool' object is not callable` が発生する
-
-- **状況**: `withq` コマンド実行時や、ボタンインタラクション時に `TypeError: 'bool' object is not callable` がログに出力され、ボットのレスポンスが正常に返りません。
-- **原因**: 独自の `View` クラス（`RowView`など）の中で、親クラス `discord.ui.View` が持つ組み込みメソッドと同じ名前のインスタンス変数 `self.is_finished` を再定義（オーバーライド）しているためです。これにより、Discord.py 内部で `view.is_finished()` を評価する際に、関数ではなく `bool` 型変数をコールしようとして例外が発生します。
-- **解決策**:
-  - ビュークラスの内部で `self.is_finished = False` などのメンバ変数を定義せず、既存の終了判定メソッド `view.is_finished()` を利用してください。
-  - ビューをプログラムから終了させたいときは、フラグの書き換えではなく `view.stop()` を呼び出します。これにより、ライブラリ内部でビューが正常に停止され、`view.is_finished()` が `True` を返すようになります。
-- **コード例（不適切な例と修正後）**:
-
-  ```python
-  # ❌ 誤った書き方（メソッドの変数は上書きしない）
-  self.view.is_finished = True
-
-  # ⭕ 正しい書き方
-  self.view.stop()
-  ```

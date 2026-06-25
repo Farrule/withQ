@@ -1,9 +1,8 @@
-version: "3"
 services:
   app:
     build: .
     container_name: withq
-    working_dir: /src
+    working_dir: /app
     restart: unless-stopped
     volumes:
-      - .:/src
+      - .:/app

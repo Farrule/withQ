@@ -2,7 +2,7 @@ import logging
 
 import discord
 
-import src.constants.embed as embed
+import constants.embed as embed
 
 
 async def command(tree, interaction: discord.Interaction):

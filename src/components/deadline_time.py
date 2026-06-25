@@ -2,8 +2,8 @@ import datetime
 import logging
 import re
 
-import src.constants.const as c
-import src.constants.regex as regex
+import constants.const as c
+import constants.regex as regex
 
 
 def deadline_time(deadline_time_str: str, now_datetime: datetime.datetime) -> tuple[float, str, bool]:

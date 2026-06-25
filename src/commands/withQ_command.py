@@ -7,12 +7,12 @@ import pytz # type: ignore
 import discord # type: ignore
 from discord.interactions import Interaction # type: ignore
 
-import src.components.deadline_time as dt
-import src.components.row_view as row_view
-import src.constants.const as c
+import components.deadline_time as dt
+import components.row_view as row_view
+import constants.const as c
 
 
-import src.backend.db as db
+import backend.db as db
 
 async def monitor_deadline(client, session_id, view, total_seconds, title, deadline_time, in_queue_member_dict, channel_id, message_id):
     try:
