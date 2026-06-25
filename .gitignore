@@ -7,8 +7,7 @@ src/libs/tests/__pycache__
 TODO.md
 TOKEN.md
 SERVER.md
-.gitignore
+.DS_Store
 
 # Data directory for database
-data/
-.DS_Store
+data/*
