@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import logging
+import uuid
 import pytz # type: ignore
 
 import discord # type: ignore
@@ -14,6 +15,7 @@ import withQ.libs.constants.const as c
 async def command(tree, interaction: discord.Interaction, title, recruitment_num, deadline_time, mention_target, feedback, env_c):
     try:
         now_datetime = datetime.datetime.now()
+        session_id = uuid.uuid4().hex[:8]
         # key: 参加者ユーザーネーム value:メンションID 初期値として募集者を代入
         in_queue_member_dict = {
             interaction.user.global_name: interaction.user.mention
@@ -43,7 +45,7 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
 
         # ログ出力
         #print(f"withQ_command: title: {title}, recruitment_num: {recruitment_num}, now_datetime: {now_datetime}, deadline_time: {deadline_time}, mention_target: {mention_target}, feedback: {feedback}")
-        logging.info(f"withQ_command: title: {title}, recruitment_num: {recruitment_num}, now_datetime: {now_datetime}, deadline_time: {deadline_time}, total_seconds: {total_seconds}, is_deadline: {is_deadline}, mention_target: {mention_target}, feedback: {feedback}")
+        logging.info(f"[withQ-{session_id}] 募集を開始しました。 募集者: {recruiter.global_name}, タイトル: {title}, 募集人数: {recruitment_num}, 締め切り時間: {deadline_time if deadline_time != None else 'AUTO_DEADLINE'}")
 
         # 募集メッセージを作成、送信する
         view = row_view.RowView(
@@ -55,6 +57,7 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
             feedback,
             deadline_time,
             is_deadline,
+            session_id,
         )
         try:
             await interaction.response.send_message(
@@ -62,8 +65,11 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
                 view=view
             )
         except Exception as e:
-            await interaction.response.send_message("コマンドの実行に失敗しました")
             logging.error(f'Error: {e}')
+            if interaction.response.is_done():
+                await interaction.followup.send(content="コマンドの実行に失敗しました", ephemeral=True)
+            else:
+                await interaction.response.send_message(content="コマンドの実行に失敗しました", ephemeral=True)
             return
 
         # 締め切り処理
@@ -83,6 +89,7 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
                         content=f'{title}\n上記の募集は成立しませんでした。',
                         view=None,
                     )
+                    logging.info(f"[withQ-{session_id}] 募集が終了しました(時間切れ・不成立)。 募集者: {recruiter.global_name}")
                     return
                 # 募集に参加した人がいた場合
                 if len(in_queue_member_dict) >= 1:
@@ -93,9 +100,14 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
                         content=f'{mentions}\n{title}  {deadline_time}\n{c.DEADLINE_TEXT}になりましたので上記の募集を締め切りました。',
                         view=None,
                     )
+                    members = [k for k in in_queue_member_dict.keys() if k != "is_deadline_param"]
+                    logging.info(f"[withQ-{session_id}] 募集が完了しました(時間切れ・成立)。 最終参加者: {members}")
                     return
 
     except Exception as e:
-        await interaction.response.send_message(content="コマンドの実行に失敗しました", ephemeral=True)
         logging.error(f'Error: {e}')
+        if interaction.response.is_done():
+            await interaction.followup.send(content="コマンドの実行に失敗しました", ephemeral=True)
+        else:
+            await interaction.response.send_message(content="コマンドの実行に失敗しました", ephemeral=True)
         return

@@ -18,13 +18,14 @@ class RowView(View):
         is_feedback_on_recruitment: bool,
         deadline_time: str,
         is_deadline: bool,
+        session_id: str,
     ):
         super().__init__(timeout=None)
         self.add_item(in_q_button.InQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time, session_id))
         self.add_item(de_q_button.DeQButton(
-            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time))
+            title, recruitment_num, in_queue_member_dict, recruiter, mention_target, is_feedback_on_recruitment, deadline_time, session_id))
         self.add_item(closing_button.ClosingQButton(
-            title, recruitment_num, in_queue_member_dict, deadline_time, is_deadline))
+            title, recruitment_num, in_queue_member_dict, deadline_time, is_deadline, session_id))
         self.add_item(cancel_button.CancelButton(
-            title, in_queue_member_dict, is_deadline))
+            title, in_queue_member_dict, is_deadline, session_id))

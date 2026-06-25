@@ -151,4 +151,4 @@ async def random_command(
         candidate,
     )
 
-client.run(TOKEN)
+client.run(TOKEN, log_handler=None)

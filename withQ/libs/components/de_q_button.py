@@ -1,4 +1,5 @@
 import discord
+import logging
 from discord.interactions import Interaction
 from discord.ui import Button
 
@@ -12,7 +13,8 @@ class DeQButton(Button):
         recruiter: discord.member.Member,
         mention_target: str,
         is_feedback_on_recruitment: bool,
-        deadline_time: str
+        deadline_time: str,
+        session_id: str
     ):
         super().__init__(label="DE Q", style=discord.ButtonStyle.red)
         self.title = title
@@ -22,6 +24,7 @@ class DeQButton(Button):
         self.mention_target = mention_target
         self.is_feedback_on_recruitment = is_feedback_on_recruitment
         self.deadline_time = deadline_time
+        self.session_id = session_id
 
     async def callback(self, interaction: Interaction):
         assert self.view is not None
@@ -40,6 +43,8 @@ class DeQButton(Button):
                 content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} {self.deadline_time if self.deadline_time != None else ""}\n募集者: {next(iter(self.in_queue_member_dict))}\n参加者: {users}'
             )
             await interaction.followup.send("この募集への参加を取り消しました。", ephemeral=True)
+            members = [k for k in self.in_queue_member_dict.keys() if k != "is_deadline_param"]
+            logging.info(f"[withQ-{self.session_id}] ユーザーが参加を取り消しました。 ユーザー: {interaction.user.global_name}, 現在の参加者: {members}")
             if self.is_feedback_on_recruitment:
                 await self.recruiter.send(
                     content=f'あなたが募集している {self.title} から {interaction.user.global_name} が参加を取り消しました。',
