@@ -37,7 +37,8 @@ else:
 # bot初期化
 intents = discord.Intents.all()
 intents.message_content = True
-client = discord.Client(command_prefix='/', intents=intents)
+allowed = discord.AllowedMentions.all()
+client = discord.Client(command_prefix='/', intents=intents, allowed_mentions=allowed)
 tree = app_commands.CommandTree(client)
 
 

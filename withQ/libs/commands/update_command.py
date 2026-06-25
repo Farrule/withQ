@@ -8,7 +8,7 @@ async def command(tree, interaction: discord.Interaction):
         await tree.fetch_commands()
         await interaction.response.send_message("コマンドの更新に成功しました", ephemeral=True)
 
-        logging.info("update_command: seccess")
+        logging.info("update_command: success")
 
         return
     except Exception as e:
