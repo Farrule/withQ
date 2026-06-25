@@ -60,8 +60,10 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
             session_id,
         )
         try:
+            deadline_text = f"\n締切時間:{deadline_time}" if deadline_time is not None else ""
+
             await interaction.response.send_message(
-                content=f'{mention_target}\n{title}  @{recruitment_num} {"締切時間:" + deadline_time if deadline_time != None else ""}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
+                content=f'{mention_target}\n{title}  @{recruitment_num}{deadline_text}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
                 view=view
             )
         except Exception as e:

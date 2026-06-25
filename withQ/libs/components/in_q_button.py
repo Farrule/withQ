@@ -52,8 +52,11 @@ class InQButton(Button):
                 for user in self.in_queue_member_dict:
                     if user != next(iter(self.in_queue_member_dict)):
                         users = user + ',' + users
+
+                deadline_text = f"\n締切時間:{self.deadline_time}" if self.deadline_time is not None else ""
+
                 await interaction.response.edit_message(
-                    content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1} {self.deadline_time if self.deadline_time != None else ""}\n募集者: {next(iter(self.in_queue_member_dict))}\n\参加者: {users}'
+                    content=f'{self.mention_target}\n{self.title}  @{self.recruitment_num - len(self.in_queue_member_dict) + 1}{deadline_text}\n募集者: {next(iter(self.in_queue_member_dict))}\n\参加者: {users}'
                 )
                 await interaction.followup.send("この募集に参加しました。", ephemeral=True)
                 members = [k for k in self.in_queue_member_dict.keys() if k != "is_deadline_param"]
