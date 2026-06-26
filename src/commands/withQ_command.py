@@ -77,23 +77,30 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
         if mention_target == None:
             mention_target = ""
 
+        db_deadline_time = None
+        display_deadline_time = None
+
         # 開始時間時間が指定されている場合に締め切り時間の計算処理を行う
         if deadline_time != None:
-            total_seconds, deadline_time, is_deadline = dt.deadline_time(
+            total_seconds, db_deadline_time, display_deadline_time, is_deadline = dt.deadline_time(
                 deadline_time, now_datetime)
+            if not is_deadline:
+                await interaction.response.send_message(content='締切時間のフォーマットが正しくない、または過去の時間です。\n(例: 21:00, 12/31/21:00, 2026/12/31/21:00)', ephemeral=True)
+                return
 
         # 開始時間が設定されていない場合、締め切り時間を設定する
         elif deadline_time == None:
             total_seconds = env_c.AUTO_DEADLINE
             is_deadline = False
             auto_deadline_datetime = now_datetime + datetime.timedelta(seconds=total_seconds)
+            db_deadline_time = auto_deadline_datetime.strftime("%Y/%m/%d/%H:%M:%S")
             if auto_deadline_datetime.date() == now_datetime.date():
-                deadline_time = auto_deadline_datetime.strftime("%H:%M")
+                display_deadline_time = auto_deadline_datetime.strftime("%H:%M")
             else:
-                deadline_time = auto_deadline_datetime.strftime("%m/%d/%H:%M")
+                display_deadline_time = auto_deadline_datetime.strftime("%m/%d/%H:%M")
 
         # ログ出力
-        logging.info(f"[withQ-{session_id}] 募集を開始しました。 募集者: {recruiter.global_name}, タイトル: {title}, 募集人数: {recruitment_num}, 締め切り時間: {deadline_time if deadline_time != None else 'AUTO_DEADLINE'}")
+        logging.info(f"[withQ-{session_id}] 募集を開始しました。 募集者: {recruiter.global_name}, タイトル: {title}, 募集人数: {recruitment_num}, 締め切り時間: {display_deadline_time if display_deadline_time != None else 'AUTO_DEADLINE'}")
 
         # 募集メッセージを作成、送信する
         view = row_view.RowView(
@@ -103,12 +110,12 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
             recruiter,
             mention_target,
             feedback,
-            deadline_time,
+            display_deadline_time,
             is_deadline,
             session_id,
         )
         try:
-            deadline_text = f"\n締切時間:{deadline_time}" if (is_deadline and deadline_time is not None) else ""
+            deadline_text = f"\n締切時間:{display_deadline_time}" if (is_deadline and display_deadline_time is not None) else ""
 
             await interaction.response.send_message(
                 content=f'{mention_target}\n{title}  @{recruitment_num}{deadline_text}\n募集者: {next(iter(in_queue_member_dict))}\n参加者:',
@@ -130,7 +137,7 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
                 recruiter_global_name=recruiter.global_name,
                 mention_target=mention_target,
                 is_feedback_on_recruitment=feedback,
-                deadline_time=deadline_time,
+                deadline_time=db_deadline_time,
                 is_deadline=is_deadline,
                 guild_id=interaction.guild_id,
                 channel_id=interaction.channel_id,
@@ -153,7 +160,7 @@ async def command(tree, interaction: discord.Interaction, title, recruitment_num
                 view=view,
                 total_seconds=total_seconds,
                 title=title,
-                deadline_time=deadline_time,
+                deadline_time=display_deadline_time,
                 in_queue_member_dict=in_queue_member_dict,
                 channel_id=interaction.channel_id,
                 message_id=message.id

@@ -21,6 +21,21 @@ async def restore_sessions(client: discord.Client):
                 except Exception:
                     recruiter = discord.Object(id=session["recruiter_id"])
 
+            display_deadline_time = session["deadline_time"]
+            db_deadline_time = session["deadline_time"]
+            if db_deadline_time:
+                try:
+                    # まず "YYYY/MM/DD/HH:MM:SS" としてパースを試みる
+                    time_in_datetime = datetime.datetime.strptime(db_deadline_time, "%Y/%m/%d/%H:%M:%S")
+                    now_datetime = datetime.datetime.now()
+                    if time_in_datetime.date() == now_datetime.date():
+                        display_deadline_time = time_in_datetime.strftime("%H:%M")
+                    else:
+                        display_deadline_time = time_in_datetime.strftime("%m/%d/%H:%M")
+                except ValueError:
+                    # 既存データなどでパース失敗した場合はそのまま使用
+                    pass
+
             view = row_view.RowView(
                 title=session["title"],
                 recruitment_num=session["recruitment_num"],
@@ -28,7 +43,7 @@ async def restore_sessions(client: discord.Client):
                 recruiter=recruiter,
                 mention_target=session["mention_target"],
                 is_feedback_on_recruitment=session["is_feedback_on_recruitment"],
-                deadline_time=session["deadline_time"],
+                deadline_time=display_deadline_time,
                 is_deadline=session["is_deadline"],
                 session_id=session["session_id"]
             )
@@ -45,7 +60,7 @@ async def restore_sessions(client: discord.Client):
                     view=view,
                     total_seconds=remaining_seconds,
                     title=session["title"],
-                    deadline_time=session["deadline_time"],
+                    deadline_time=display_deadline_time,
                     in_queue_member_dict=session["in_queue_member_dict"],
                     channel_id=session["channel_id"],
                     message_id=session["message_id"]
